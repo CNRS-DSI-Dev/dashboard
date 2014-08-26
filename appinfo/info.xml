@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<info>
+    <id>dashboard</id>
+    <name>Dashboard</name>
+    <description>Get and display some use stats</description>
+    <version>0.1</version>
+    <licence>AGPL</licence>
+    <author>Patrick Paysant / CNRS</author>
+    <require>7</require>
+</info>
