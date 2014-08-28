@@ -19,6 +19,12 @@ $application->registerRoutes($this, array(
             'verb' => 'GET',
         ),
         array(
+            'name' =>
+            'api_stats#space_use',
+            'url' => '/api/1.0/space_use',
+            'verb' => 'GET',
+        ),
+        array(
             'name' => 'api_stats#preflighted_cors',
             'url' => '/api/1.0/stats/{path}',
             'verb' => 'OPTIONS',

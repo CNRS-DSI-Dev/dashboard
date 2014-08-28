@@ -18,7 +18,6 @@ class APIStatsController extends APIController {
 
     /**
      * @NoCSRFRequired
-     * @API
      * @CORS
      */
     public function stats() {
@@ -39,5 +38,21 @@ class APIStatsController extends APIController {
         return new JSONResponse($stats);
     }
 
+    /**
+     * @NoCSRFRequired
+     * @CORS
+     */
+    public function spaceUse() {
+        $percent = 0;
+
+        $globalFreeSpace = $this->statService->globalFreeSpace();
+        $globalStorageInfo = $this->statService->getGlobalStorageInfo();
+
+        $totalSpace = $globalStorageInfo['totalSize'] + $globalFreeSpace;
+
+        $percent = sprintf("%.2f", $globalStorageInfo['totalSize'] * 100 / $totalSpace);
+
+        return new JSONResponse($percent);
+    }
 
 }

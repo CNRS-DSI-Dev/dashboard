@@ -19,18 +19,15 @@ class PageController extends Controller {
      * @NoCSRFRequired
      */
     public function index() {
+        return $this->render('main');
+    }
 
-        $stats = array(
-            'uid'               => $this->userId,
-            'appVersion'        => $this->settings->getAppValue($this->appName, 'installed_version'),
-            'userLastLogin'     => date('d/m/Y H:i:s', $this->settings->getUserValue($this->userId, 'login', 'lastLogin')),
-            'nbUsers'           => $this->statService->countUsers(),
-            'globalFreeSpace'   => \OCP\Util::humanFileSize($this->statService->globalFreeSpace()),
-            'userDataDir'       => $this->statService->getUserDataDir(),
-            'globalStorageInfo' => $this->statService->getGlobalStorageInfo(),
-        );
+    protected function formatSize($size) {
+        return \OCP\Util::humanFileSize($size);
+    }
 
-        return $this->render('main', $stats);
+    protected function formatNumber($number) {
+        return sprintf("%.2f", $number);
     }
 
 

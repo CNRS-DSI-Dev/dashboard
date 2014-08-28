@@ -50,6 +50,8 @@ class StatService {
         $stats['totalSize'] = 0;
         $this->getFilesStat($view, '', $stats);
 
+        $stats['totalFolders'] -= $this->countUsers();
+
         // some basic stats
         $stats['filesPerUser'] = $stats['totalFiles'] / $this->countUsers();
         $stats['filesPerFolder'] = $stats['totalFiles'] / $stats['totalFolders'];
@@ -57,10 +59,15 @@ class StatService {
         $stats['sharesPerUser'] = $stats['totalShares'] / $this->countUsers();
         $stats['sizePerUser'] = $stats['totalSize'] / $this->countUsers();
         $stats['sizePerFile'] = $stats['totalSize'] / $stats['totalFiles'];
-        $stats['sizePerFolders'] = $stats['totalSize'] / $stats['totalFolders'];
+        $stats['sizePerFolder'] = $stats['totalSize'] / $stats['totalFolders'];
 
         // TODO : variance
-
+        foreach($stats as $owner => $datas) {
+            $varianceNbFiles += $datas['nbFiles'] * $datas['nbFiles'];
+            $varianceNbFolders += $datas['nbFolders'] * $datas['nbFolders'];
+        }
+        $stats['varianceNbFilesPerUser'] = $varianceNbFiles / $this->countUsers() - ($stats['filesPerUser'] * $stats['filesPerUser']) ;
+        $stats['varianceNbFoldersPerUser'] = $varianceNbFolders / $this->countUsers() - ($stats['foldersPerUser'] * $stats['foldersPerUser']) ;
 
         return $stats;
     }
@@ -103,8 +110,8 @@ class StatService {
 
             // if folder, recurse
             if ($item->getType() == \OCP\Files\FileInfo::TYPE_FOLDER) {
-                $stats[$owner]['nbFolders']++;
                 $stats['totalFolders']++;
+                $stats[$owner]['nbFolders']++;
                 $this->getFilesStat($view, $item->getPath(), $stats);
             }
             else {
