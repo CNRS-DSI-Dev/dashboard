@@ -1,15 +1,13 @@
 <?php
-namespace OCA\Dashboard\Controller;
+namespace OCA\Dashboard\Service;
 
 class StatService {
 
     protected $userManager;
-    protected $rootStorage;
     protected $datas;
 
-    public function __construct($userManager, $rootStorage) {
+    public function __construct($userManager) {
         $this->userManager = $userManager;
-        $this->rootStorage = $rootStorage;
 
         $this->datas = array();
     }
@@ -62,6 +60,7 @@ class StatService {
         $stats['sizePerFolders'] = $stats['totalSize'] / $stats['totalFolders'];
 
         // TODO : variance
+
 
         return $stats;
     }

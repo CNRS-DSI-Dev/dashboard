@@ -5,7 +5,7 @@ namespace OCA\Dashboard\App;
 use \OCP\AppFramework\App;
 use \OCA\Dashboard\Controller\PageController;
 use \OCA\Dashboard\Controller\APIStatsController;
-use \OCA\Dashboard\Controller\StatService;
+use \OCA\Dashboard\Service\StatService;
 
 class Dashboard extends App {
 
@@ -43,17 +43,12 @@ class Dashboard extends App {
 
         $container->registerService('StatService', function($c){
             return new StatService(
-                $c->query('UserManager'),
-                $c->query('RootStorage')
+                $c->query('UserManager')
             );
         });
 
         $container->registerService('UserManager', function($c) {
             return $c->query('ServerContainer')->getUserManager();
-        });
-
-        $container->registerService('RootStorage', function($c) {
-            return $c->query('ServerContainer')->getRootFolder();
         });
 
         /**

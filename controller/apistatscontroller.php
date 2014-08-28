@@ -18,18 +18,25 @@ class APIStatsController extends APIController {
 
     /**
      * @NoCSRFRequired
+     * @API
      * @CORS
      */
     public function stats() {
-        return new JSONResponse(array(
-            'uid'           => $this->userId,
-            'appVersion'    => $this->settings->getAppValue($this->appName, 'installed_version'),
-            'userLastLogin' => date('d/m/Y H:i:s', $this->settings->getUserValue($this->userId, 'login', 'lastLogin')),
-            'nbUsers'       => $this->statService->countUsers(),
+        $stats = array(
+            'uid'               => $this->userId,
+            'appVersion'        => $this->settings->getAppValue($this->appName, 'installed_version'),
+            'userLastLogin'     => date('d/m/Y H:i:s', $this->settings->getUserValue($this->userId, 'login', 'lastLogin')),
+            'nbUsers'           => $this->statService->countUsers(),
             'globalFreeSpace'   => \OCP\Util::humanFileSize($this->statService->globalFreeSpace()),
-            'userDataDir'   => $this->statService->getUserDataDir(),
+            'userDataDir'       => $this->statService->getUserDataDir(),
             'globalStorageInfo' => $this->statService->getGlobalStorageInfo(),
-        ));
+        );
+
+        $this->registerResponder('xml', function($stats){
+            return new XMLResponse($stats);
+        });
+
+        return new JSONResponse($stats);
     }
 
 
