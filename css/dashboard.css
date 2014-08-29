@@ -21,7 +21,7 @@
 #space {
     width: 40em;
 }
-#users {
+#folders {
     clear: left;
 }
 .dataBlock p {
@@ -39,7 +39,10 @@
 #files p.header {
     background: url("/apps/dashboard/img/file.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
 }
-#space.dataBlock p.header, #users.dataBlock p.header, #folders.dataBlock p.header, #files.dataBlock p.header {
+#shares p.header {
+    background: url("/apps/dashboard/img/share.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
+}
+#space.dataBlock p.header, #users.dataBlock p.header, #folders.dataBlock p.header, #files.dataBlock p.header, #shares.dataBlock p.header {
     font-weight: bold;
     background-color: #eee;
     padding: 1em 1em 1em 45px;

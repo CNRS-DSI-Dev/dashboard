@@ -48,6 +48,7 @@ class StatService {
         $stats['totalFolders'] = 0;
         $stats['totalShares'] = 0;
         $stats['totalSize'] = 0;
+        $stats['users'] = array();
         $this->getFilesStat($view, '', $stats);
 
         $stats['totalFolders'] -= $this->countUsers();
@@ -61,15 +62,38 @@ class StatService {
         $stats['sizePerFile'] = $stats['totalSize'] / $stats['totalFiles'];
         $stats['sizePerFolder'] = $stats['totalSize'] / $stats['totalFolders'];
 
-        // TODO : variance
-        foreach($stats as $owner => $datas) {
+        $varianceNbFiles = 0;
+        $varianceNbFolders = 0;
+        foreach($stats['users'] as $owner => $datas) {
+            // TODO : variance
             $varianceNbFiles += $datas['nbFiles'] * $datas['nbFiles'];
             $varianceNbFolders += $datas['nbFolders'] * $datas['nbFolders'];
+
+            // shares
+            $stats['users'][$owner]['nbShares'] = $this->getSharesStats($owner);
+            $stats['totalShares'] += $stats['users'][$owner]['nbShares'];
         }
+
+        $stats['sharesPerUser'] = $stats['totalShares'] / $this->countUsers();
+
         $stats['varianceNbFilesPerUser'] = $varianceNbFiles / $this->countUsers() - ($stats['filesPerUser'] * $stats['filesPerUser']) ;
         $stats['varianceNbFoldersPerUser'] = $varianceNbFolders / $this->countUsers() - ($stats['foldersPerUser'] * $stats['foldersPerUser']) ;
 
         return $stats;
+    }
+
+    protected function getSharesStats($owner) {
+        // $shares = \OCP\Share::getItemsSharedWithUser('file', 'admin');
+        $sharedFiles   = \OC\Share\Share::getItems('file', null, null, null, $owner, \OC\Share\Share::FORMAT_NONE, null, -1, false);
+// $f = fopen('/tmp/truc.log', 'a');
+// fputs($f, $owner . " : files\n");
+// fputs($f, print_r($sharedFiles, true) . "\n");
+//         $sharedFolders = \OC\Share\Share::getItems('folder', null, null, null, $owner, \OC\Share\Share::FORMAT_NONE, null, -1, false);
+// fputs($f, $owner . " : folders\n");
+// fputs($f, print_r($sharedFolders, true) . "\n");
+// fclose($f);
+
+        return count($sharedFiles) + count($sharedFolders);
     }
 
     /**
@@ -85,14 +109,14 @@ class StatService {
             $owner = $this->getOwner($item->getPath());
 
             // $owner = $view->getOwner($item->getPath());
-            if (!isset($stats[$owner])) {
+            if (!isset($stats['users'][$owner])) {
                 if ($item->getType() == \OCP\Files\FileInfo::TYPE_FOLDER) {
-                    $stats[$owner] = array();
-                    // $stats[$owner]['entries'] = array();
-                    $stats[$owner]['nbFiles'] = 0;
-                    $stats[$owner]['nbFolders'] = 0;
-                    $stats[$owner]['nbShares'] = 0;
-                    $stats[$owner]['filesize'] = 0;
+                    $stats['users'][$owner] = array();
+                    // $stats['users'][$owner]['entries'] = array();
+                    $stats['users'][$owner]['nbFiles'] = 0;
+                    $stats['users'][$owner]['nbFolders'] = 0;
+                    $stats['users'][$owner]['nbShares'] = 0;
+                    $stats['users'][$owner]['filesize'] = 0;
                 }
                 else {
                     // do not get files in rootDir
@@ -101,8 +125,8 @@ class StatService {
             }
 
             if ($item->isShared()) {
-                $stats[$owner]['nbShares']++;
-                $stats['totalShares']++;
+                // $stats[$owner]['nbShares']++;
+                // $stats['totalShares']++;
                 continue;
             }
 
@@ -111,13 +135,13 @@ class StatService {
             // if folder, recurse
             if ($item->getType() == \OCP\Files\FileInfo::TYPE_FOLDER) {
                 $stats['totalFolders']++;
-                $stats[$owner]['nbFolders']++;
+                $stats['users'][$owner]['nbFolders']++;
                 $this->getFilesStat($view, $item->getPath(), $stats);
             }
             else {
-                $stats[$owner]['nbFiles']++;
+                $stats['users'][$owner]['nbFiles']++;
                 $stats['totalFiles']++;
-                $stats[$owner]['filesize'] += $item->getSize();
+                $stats['users'][$owner]['filesize'] += $item->getSize();
                 $stats['totalSize'] += $item->getSize();
             }
         }

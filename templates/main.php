@@ -17,9 +17,9 @@
 <div id="space" class="dataBlock">
     <p class="header">Disk space</p>
     <p>User data dir : {{ stats.userDataDir }} </p>
-    <p>Global free space : {{ stats.globalFreeSpace }}</p>
+    <p>Global free space : {{ stats.globalFreeSpace | humanFileSize }}</p>
     <p>Total used space : {{ stats.globalStorageInfo.totalSize | humanFileSize }}</p>
-    <div id="progressbar"><div class="progress-label">Loading...</div></div>
+    <div id="progressbar" ng-progressbar><div class="progress-label">Loading...</div></div>
 </div>
 
 <div id="users" class="dataBlock">
@@ -39,6 +39,13 @@
 <div id="files" class="dataBlock">
     <p class="header">Files <span>{{ stats.globalStorageInfo.totalFiles }}</span></p>
     <p>Size / file <span>{{ stats.globalStorageInfo.sizePerFile | humanFileSize }}</span></p>
+    <br>
+    <br>
+</div>
+
+<div id="shares" class="dataBlock">
+    <p class="header">Shares <span>{{ stats.globalStorageInfo.totalShares }}</span></p>
+    <p>Shares / user <span>{{ stats.globalStorageInfo.sharesPerUser | number:2 }}</span></p>
     <br>
     <br>
 </div>
