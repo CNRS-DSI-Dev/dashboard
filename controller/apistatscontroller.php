@@ -26,7 +26,7 @@ class APIStatsController extends APIController {
             'appVersion'        => $this->settings->getAppValue($this->appName, 'installed_version'),
             'userLastLogin'     => date('d/m/Y H:i:s', $this->settings->getUserValue($this->userId, 'login', 'lastLogin')),
             'nbUsers'           => $this->statService->countUsers(),
-            'globalFreeSpace'   => \OCP\Util::humanFileSize($this->statService->globalFreeSpace()),
+            'globalFreeSpace'   => $this->statService->globalFreeSpace(),
             'userDataDir'       => $this->statService->getUserDataDir(),
             'globalStorageInfo' => $this->statService->getGlobalStorageInfo(),
         );

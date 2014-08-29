@@ -9,10 +9,10 @@ $(function() {
     });
 });
 
-var dashboard = angular.module('dashboard', []);
+var dashboard = angular.module('dashboard', ['dashboard.services', 'dashboard.filters']);
 
-dashboard.controller('statsController', ['$scope', '$http', function($scope, $http){
-    $http.get(OC.generateUrl('/apps/dashboard/api/1.0/stats'))
+dashboard.controller('statsController', ['$scope', 'statsService', function($scope, statsService) {
+    statsService.getStats()
         .success(function(data) {
             $scope.stats = data;
             console.log(data);
@@ -23,3 +23,21 @@ dashboard.controller('statsController', ['$scope', '$http', function($scope, $ht
             $scope.error = true;
         });
 }]);
+
+angular.module('dashboard.services', [])
+    .factory('statsService', ['$http', function($http){
+        var dogetStats = function() {
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/stats'));
+        }
+
+        return {
+            getStats: function() { return dogetStats(); },
+        };
+    }]);
+
+angular.module('dashboard.filters', [])
+    .filter('humanFileSize', function() {
+        return function(size) {
+            return OC.Util.humanFileSize(size, false);
+        };
+    });
