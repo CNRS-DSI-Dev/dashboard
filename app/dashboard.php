@@ -6,9 +6,10 @@ use \OCP\AppFramework\App;
 use \OCA\Dashboard\Controller\PageController;
 use \OCA\Dashboard\Controller\APIStatsController;
 use \OCA\Dashboard\Service\StatService;
+use \OCA\Dashboard\Service\StatsTaskService;
+use \OCA\Dashboard\Db\HistoryMapper;
 
 class Dashboard extends App {
-
 
     /**
      * Define your dependencies in here
@@ -49,6 +50,22 @@ class Dashboard extends App {
 
         $container->registerService('UserManager', function($c) {
             return $c->query('ServerContainer')->getUserManager();
+        });
+
+        $container->registerService('StatsTaskService', function($c) {
+            return new StatsTaskService(
+                $c->query('StatService'),
+                $c->query('HistoryMapper')
+            );
+        });
+
+        /**
+         * Database Layer
+         */
+        $container->registerService('HistoryMapper', function($c) {
+            return new HistoryMapper(
+                $c->query('ServerContainer')->getDb()
+            );
         });
 
         /**

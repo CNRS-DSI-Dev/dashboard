@@ -26,3 +26,6 @@
     'icon' => \OCP\Util::imagePath('dashboard', 'dashboard.svg'),
     'name' => \OC_L10N::get('dashboard')->t('Dashboard')
 ));
+
+// cron task
+\OCP\Backgroundjob::addRegularTask('\OCA\dashboard\Cron\statsTask', 'run');

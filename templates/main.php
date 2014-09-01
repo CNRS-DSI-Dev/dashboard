@@ -17,9 +17,8 @@
 <div id="space" class="dataBlock">
     <p class="header">Disk space</p>
     <p>User data dir : {{ stats.userDataDir }} </p>
-    <p>Global free space : {{ stats.globalFreeSpace | humanFileSize }}</p>
+    <p>Default quota per user : {{ stats.globalStorageInfo.defaultQuota | humanFileSize }}</p>
     <p>Total used space : {{ stats.globalStorageInfo.totalSize | humanFileSize }}</p>
-    <div id="progressbar" ng-progressbar><div class="progress-label">Loading...</div></div>
 </div>
 
 <div id="users" class="dataBlock">

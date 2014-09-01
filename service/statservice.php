@@ -12,6 +12,10 @@ class StatService {
         $this->datas = array();
     }
 
+    public function getUserDataDir() {
+        return \OCP\Config::getSystemValue('datadirectory', '');
+    }
+
     public function countUsers() {
         if (isset($this->datas['nbUsers'])) {
             return $this->datas['nbUsers'];
@@ -32,15 +36,6 @@ class StatService {
         return $nbUsers;
     }
 
-    public function globalFreeSpace() {
-        $fs = \OCP\Files::getStorage('files');
-        return $fs->free_space();
-    }
-
-    public function getUserDataDir() {
-        return \OCP\Config::getSystemValue('datadirectory', '');
-    }
-
     public function getGlobalStorageInfo() {
         $view = new \OC\Files\View();
         $stats = array();
@@ -49,6 +44,7 @@ class StatService {
         $stats['totalShares'] = 0;
         $stats['totalSize'] = 0;
         $stats['users'] = array();
+        $stats['defaultQuota'] = \OCP\Util::computerFileSize(\OCP\Config::getAppValue('files', 'default_quota', 'none'));
         $this->getFilesStat($view, '', $stats);
 
         $stats['totalFolders'] -= $this->countUsers();
@@ -82,20 +78,6 @@ class StatService {
         return $stats;
     }
 
-    protected function getSharesStats($owner) {
-        // $shares = \OCP\Share::getItemsSharedWithUser('file', 'admin');
-        $sharedFiles   = \OC\Share\Share::getItems('file', null, null, null, $owner, \OC\Share\Share::FORMAT_NONE, null, -1, false);
-// $f = fopen('/tmp/truc.log', 'a');
-// fputs($f, $owner . " : files\n");
-// fputs($f, print_r($sharedFiles, true) . "\n");
-//         $sharedFolders = \OC\Share\Share::getItems('folder', null, null, null, $owner, \OC\Share\Share::FORMAT_NONE, null, -1, false);
-// fputs($f, $owner . " : folders\n");
-// fputs($f, print_r($sharedFolders, true) . "\n");
-// fclose($f);
-
-        return count($sharedFiles) + count($sharedFolders);
-    }
-
     /**
      * Get some global stats
      * @param \OC\Files\View $view
@@ -105,18 +87,16 @@ class StatService {
     protected function getFilesStat($view, $path='', &$stats) {
         $dc = $view->getDirectoryContent($path);
         foreach($dc as $item) {
-            // FIXME : preg the first part of filepath to get owner...
             $owner = $this->getOwner($item->getPath());
 
-            // $owner = $view->getOwner($item->getPath());
             if (!isset($stats['users'][$owner])) {
                 if ($item->getType() == \OCP\Files\FileInfo::TYPE_FOLDER) {
                     $stats['users'][$owner] = array();
-                    // $stats['users'][$owner]['entries'] = array();
                     $stats['users'][$owner]['nbFiles'] = 0;
                     $stats['users'][$owner]['nbFolders'] = 0;
                     $stats['users'][$owner]['nbShares'] = 0;
                     $stats['users'][$owner]['filesize'] = 0;
+                    $stats['users'][$owner]['quota'] = \OC_Util::getUserQuota($owner);
                 }
                 else {
                     // do not get files in rootDir
@@ -125,12 +105,8 @@ class StatService {
             }
 
             if ($item->isShared()) {
-                // $stats[$owner]['nbShares']++;
-                // $stats['totalShares']++;
                 continue;
             }
-
-            // array_push($stats[$owner]['entries'], $item->getPath());
 
             // if folder, recurse
             if ($item->getType() == \OCP\Files\FileInfo::TYPE_FOLDER) {
@@ -166,4 +142,17 @@ class StatService {
         return '';
     }
 
+    protected function getSharesStats($owner) {
+        // $shares = \OCP\Share::getItemsSharedWithUser('file', 'admin');
+        $sharedFiles   = \OC\Share\Share::getItems('file', null, null, null, $owner, \OC\Share\Share::FORMAT_NONE, null, -1, false);
+// $f = fopen('/tmp/truc.log', 'a');
+// fputs($f, $owner . " : files\n");
+// fputs($f, print_r($sharedFiles, true) . "\n");
+        //  $sharedFolders = \OC\Share\Share::getItems('folder', null, null, null, $owner, \OC\Share\Share::FORMAT_NONE, null, -1, false);
+// fputs($f, $owner . " : folders\n");
+// fputs($f, print_r($sharedFolders, true) . "\n");
+// fclose($f);
+
+        return count($sharedFiles) + count($sharedFolders);
+    }
 }
