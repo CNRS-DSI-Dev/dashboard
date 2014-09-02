@@ -1,7 +1,10 @@
 <?php
 
 \OCP\Util::addStyle('dashboard', 'dashboard');
+
 \OCP\Util::addScript('dashboard', 'angular.min');
+\OCP\Util::addScript('dashboard', 'lib/Chart.min');
+\OCP\Util::addScript('dashboard', 'chartjs-directive');
 \OCP\Util::addScript('dashboard', 'dashboard');
 
 ?>
@@ -47,6 +50,11 @@
     <p>Shares / user <span>{{ stats.globalStorageInfo.sharesPerUser | number:2 }}</span></p>
     <br>
     <br>
+</div>
+
+<div class="history">
+    <p>User number (30 last days)</p>
+    <chart value="nbUsersHistory" type="Line" width="800" height="300"></chart>
 </div>
 
 </div>

@@ -20,8 +20,8 @@ $application->registerRoutes($this, array(
         ),
         array(
             'name' =>
-            'api_stats#space_use',
-            'url' => '/api/1.0/space_use',
+            'api_stats#history_stats',
+            'url' => '/api/1.0/history_stats',
             'verb' => 'GET',
         ),
         array(

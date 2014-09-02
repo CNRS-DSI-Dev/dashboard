@@ -65,6 +65,10 @@
     text-shadow: 1px 1px 0 #fff;
 }
 
+.history {
+    clear: left;
+}
+
 #footer {
     clear: both;
     margin-top: 2em;

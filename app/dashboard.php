@@ -38,7 +38,8 @@ class Dashboard extends App {
                 $c->query('Request'),
                 $c->query('CoreConfig'),
                 $c->query('UserId'),
-                $c->query('StatService')
+                $c->query('StatService'),
+                $c->query('HistoryMapper')
             );
         });
 

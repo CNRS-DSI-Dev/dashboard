@@ -8,13 +8,18 @@ use \OCP\IRequest;
 
 class APIStatsController extends APIController {
 
-    public function __construct($appName, IRequest $request, IConfig $settings, $userId, $statService){
+    protected $settings;
+    protected $userId;
+    protected $statService;
+    protected $historyMapper;
+
+    public function __construct($appName, IRequest $request, IConfig $settings, $userId, $statService, \OCA\Dashboard\Db\HistoryMapper $historyMapper){
         parent::__construct($appName, $request, 'GET');
         $this->settings = $settings;
         $this->userId = $userId;
         $this->statService = $statService;
+        $this->historyMapper = $historyMapper;
     }
-
 
     /**
      * @NoCSRFRequired
@@ -52,6 +57,51 @@ class APIStatsController extends APIController {
         $percent = sprintf("%.2f", $globalStorageInfo['totalSize'] * 100 / $totalSpace);
 
         return new JSONResponse($percent);
+    }
+
+    /**
+     * @NoCSRFRequired
+     * @CORS
+     */
+    public function historyStats() {
+        $statName = array('date', 'defaultQuota', 'totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares');
+
+        $history = array();
+        $history['by30d'] = array();
+        foreach($statName as $name) {
+            $history['by30d'][$name] = '';
+        }
+
+        // by 30d (30 last days)
+        $datetime = new \DateTime();
+        $datetime->sub(new \dateInterval('P30D'));
+        $datas = $this->historyMapper->findAllFrom($datetime);
+
+        $arrayDatas = array();
+        foreach($statName as $name) {
+            $arrayDatas[$name] = array();
+        }
+        foreach($datas as $data) {
+            foreach($statName as $name) {
+                // date need special processing as we only retain day number
+                if ($name == "date") {
+                    list($date, $time) = explode(' ', $data->getDate());
+                    list($year, $month, $day) = explode('-', $date);
+                    array_push($arrayDatas['date'], $day);
+                }
+                else {
+                    $func = 'get' . ucfirst($name);
+                    array_push($arrayDatas[$name], (int)$data->$func());
+                }
+            }
+        }
+
+        foreach($statName as $name) {
+            // $history['by30d'][$name] = implode(',', $arrayDatas[$name]);
+            $history['by30d'][$name] = $arrayDatas[$name];
+        }
+
+        return new JSONResponse($history);
     }
 
 }
