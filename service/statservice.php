@@ -153,6 +153,6 @@ class StatService {
 // fputs($f, print_r($sharedFolders, true) . "\n");
 // fclose($f);
 
-        return count($sharedFiles) + count($sharedFolders);
+        return count($sharedFiles)/* + count($sharedFolders)*/;
     }
 }
