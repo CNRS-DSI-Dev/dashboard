@@ -15,10 +15,10 @@ class HistoryMapper extends Mapper {
         return $this->findEntities($sql, $limit, $offset);
     }
 
-    public function findAllFrom($timestamp) {
+    public function findAllFrom($datetime) {
         $sql = "SELECT * FROM *PREFIX*dashboard_history WHERE date > ? ORDER BY date";
         return $this->findEntities($sql, array(
-            $timestamp,
+            $datetime,
         ));
     }
 }
