@@ -63,19 +63,32 @@ class APIStatsController extends APIController {
      * @NoCSRFRequired
      * @CORS
      */
-    public function historyStats() {
+    public function historyStats($dataType='all', $range=30) {
         $statName = array('date', 'defaultQuota', 'totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares');
 
+        if ($dataType !== 'all') {
+            if (!in_array($dataType, $statName)) {
+                $response = new JSONResponse();
+                return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
+            }
+            $statName = array('date', $dataType);
+        }
+
+        if (intval($range) <= 0) {
+            $response = new JSONResponse();
+            return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
+        }
+
         $history = array();
-        $history['by30d'] = array();
+        $history = array();
         foreach($statName as $name) {
-            $history['by30d'][$name] = '';
+            $history[$name] = '';
         }
 
         // by 30d (30 last days)
         $datetime = new \DateTime();
-        $datetime->sub(new \dateInterval('P30D'));
-        $datas = $this->historyMapper->findAllFrom($datetime);
+        $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
+        $datas = $this->historyMapper->findAllFrom($datetime, $dataType);
 
         $arrayDatas = array();
         foreach($statName as $name) {
@@ -97,8 +110,7 @@ class APIStatsController extends APIController {
         }
 
         foreach($statName as $name) {
-            // $history['by30d'][$name] = implode(',', $arrayDatas[$name]);
-            $history['by30d'][$name] = $arrayDatas[$name];
+            $history[$name] = $arrayDatas[$name];
         }
 
         return new JSONResponse($history);

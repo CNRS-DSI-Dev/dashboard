@@ -1,8 +1,17 @@
-var dashboard = angular.module('dashboard', ['dashboard.services', 'dashboard.filters', 'chartjs-directive']);
+var dashboard = angular.module('dashboard', ['dashboard.services.stats', 'dashboard.services.chart', 'dashboard.filters', 'chartjs-directive']);
 
 
-dashboard.controller('statsController', ['$scope', 'statsService', function($scope, statsService) {
-    var nbUsersHistoryDatas = {}
+dashboard.controller('statsController', ['$scope', 'statsService', 'chartService', function($scope, statsService, chartService) {
+    $scope.dataTypes = ['nbUsers', 'nbFolders'];
+    $scope.dataType = 'nbUsers';
+
+    $scope.nbDaysChoices = [
+        {nb: 7, label:'Last week'},
+        {nb: 30, label:'Last month'},
+        {nb: 180, label:'Last semester'},
+        {nb: 365, label:'Last year'}
+    ]
+    $scope.nbDays = $scope.nbDaysChoices[1];
 
     statsService.getStats()
         .success(function(data) {
@@ -13,13 +22,71 @@ dashboard.controller('statsController', ['$scope', 'statsService', function($sco
             $scope.error = true;
         });
 
-    statsService.getHistoryStats()
+    statsService.getHistoryStats('nbUsers', 30)
         .success(function(data) {
-            nbUsersHistoryDatas = data;
+            $scope.dataHistory = chartService.confChart(data, 'nbUsers');
+        })
+        .error(function(data) {
+            console.log('Error: ' + data);
+            $scope.error = true;
+        });
 
-            var nbUsersHistoryConf = {
-                // labels: ['a', 'b', 'c', 'd', 'e'],
-                labels: nbUsersHistoryDatas.by30d.date,
+    $scope.$watch(
+        'dataType',
+        function(value){
+            console.log(value);
+
+            statsService.getHistoryStats(value, $scope.nbDays.nb)
+                .success(function(data) {
+                    $scope.dataHistory = chartService.confChart(data, value);
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                    $scope.error = true;
+                });
+        }
+    );
+
+    $scope.$watch(
+        'nbDays',
+        function(value){
+            console.log(value);
+
+            statsService.getHistoryStats($scope.dataType, value.nb)
+                .success(function(data) {
+                    $scope.dataHistory = chartService.confChart(data, $scope.dataType);
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                    $scope.error = true;
+                });
+        }
+    );
+
+}]);
+
+angular.module('dashboard.services.stats', [])
+    .factory('statsService', ['$http', function($http){
+        var doGetStats = function() {
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/stats'));
+        }
+        var doGetHistoryStats = function(dataType, nbDays) {
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/'+dataType+'/'+nbDays));
+        }
+        return {
+            getStats: function() { return doGetStats(); },
+            getHistoryStats: function(dataType, nbDays) { return doGetHistoryStats(dataType, nbDays); },
+        };
+    }]);
+
+angular.module('dashboard.services.chart', [])
+    .factory('chartService', [function(){
+        var doConfChart = function(data, item) {
+            if (!data) {
+                return {};
+            }
+            var dataHistoryConf = {
+                labels: data.date,
                 datasets: [
                     {
                         label: "Users",
@@ -29,38 +96,21 @@ dashboard.controller('statsController', ['$scope', 'statsService', function($sco
                         pointStrokeColor: "#fff",
                         pointHighlightFill: "#fff",
                         pointHighlightStroke: "rgba(220,220,220,1)",
-                        // data: [2, 4, 6, 3, 5]
-                        data: nbUsersHistoryDatas.by30d.nbUsers
+                        data: data[item]
                     }
                 ]
             }
+
             var options = {
                 responsive: true,
                 showTooltips: true,
-                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
             }
-            $scope.nbUsersHistory = {"data": nbUsersHistoryConf, "options": options};
-        })
-        .error(function(data) {
-            console.log('Error: ' + data);
-            $scope.error = true;
-        });
 
-
-}]);
-
-angular.module('dashboard.services', [])
-    .factory('statsService', ['$http', function($http){
-        var doGetStats = function() {
-            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/stats'));
-        }
-        var doGetHistoryStats = function() {
-            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats'));
+            return {"data": dataHistoryConf, "options": options};
         }
         return {
-            getStats: function() { return doGetStats(); },
-            getHistoryStats: function() { return doGetHistoryStats(); },
-        };
+            confChart: function(data, item) { return doConfChart(data, item) }
+        }
     }]);
 
 angular.module('dashboard.filters', [])

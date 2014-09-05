@@ -53,8 +53,11 @@
 </div>
 
 <div class="history">
-    <p>User number (30 last days)</p>
-    <chart value="nbUsersHistory" type="Line" width="800" height="300"></chart>
+    <div>
+        <select ng-model="dataType" ng-options="type for type in dataTypes"></select>
+        <select ng-model="nbDays" ng-options="choices as choices.label for choices in nbDaysChoices"></select>
+    </div>
+    <chart value="dataHistory" type="Line" width="800" height="300"></chart>
 </div>
 
 </div>
