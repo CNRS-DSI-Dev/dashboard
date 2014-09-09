@@ -45,6 +45,11 @@ class StatService {
         $stats['totalSize'] = 0;
         $stats['users'] = array();
         $stats['defaultQuota'] = \OCP\Util::computerFileSize(\OCP\Config::getAppValue('files', 'default_quota', 'none'));
+
+        $nbFoldersVariance = new Variance;
+        $nbFilesVariance = new Variance;
+        $nbSharesVariance = new Variance;
+
         $this->getFilesStat($view, '', $stats);
 
         $stats['totalFolders'] -= $this->countUsers();
@@ -58,22 +63,22 @@ class StatService {
         $stats['sizePerFile'] = $stats['totalSize'] / $stats['totalFiles'];
         $stats['sizePerFolder'] = $stats['totalSize'] / $stats['totalFolders'];
 
-        $varianceNbFiles = 0;
-        $varianceNbFolders = 0;
         foreach($stats['users'] as $owner => $datas) {
-            // TODO : variance
-            $varianceNbFiles += $datas['nbFiles'] * $datas['nbFiles'];
-            $varianceNbFolders += $datas['nbFolders'] * $datas['nbFolders'];
+            $nbFoldersVariance->addValue($data['nbFolders']);
+            $nbFilesVariance->addValue($datas['nbFiles']);
 
             // shares
             $stats['users'][$owner]['nbShares'] = $this->getSharesStats($owner);
             $stats['totalShares'] += $stats['users'][$owner]['nbShares'];
+            $nbSharesVariance->addValue($stats['users'][$owner]['nbShares']);
         }
 
         $stats['sharesPerUser'] = $stats['totalShares'] / $this->countUsers();
 
-        $stats['varianceNbFilesPerUser'] = $varianceNbFiles / $this->countUsers() - ($stats['filesPerUser'] * $stats['filesPerUser']) ;
-        $stats['varianceNbFoldersPerUser'] = $varianceNbFolders / $this->countUsers() - ($stats['foldersPerUser'] * $stats['foldersPerUser']) ;
+        $stats['meanNbFilesPerUser'] = $nbFilesVariance->getMean();
+        $stats['stdvNbFilesPerUser'] = $nbFilesVariance->getStandardDeviation();
+        $stats['stdvNbFoldersPerUser'] = $nbFoldersVariance->getStandardDeviation();
+        $stats['stdvNbsharesPerUser'] = $nbSharesVariance->getStandardDeviation();
 
         return $stats;
     }

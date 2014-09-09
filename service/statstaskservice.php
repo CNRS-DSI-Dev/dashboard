@@ -42,6 +42,16 @@ class StatsTaskService {
         $history->setNbFiles($globalStorageInfo['totalFiles']);
         $history->setNbShares($globalStorageInfo['totalShares']);
         $history->setTotalUsedSpace($globalStorageInfo['totalSize']);
+        $history->setSizePerUser($globalStorageInfo['sizePerUser']);
+        $history->setFoldersPerUser($globalStorageInfo['foldersPerUser']);
+        $history->setFilesPerUser($globalStorageInfo['filesPerUser']);
+        $history->setSharesPerUser($globalStorageInfo['sharesPerUser']);
+        $history->setSizePerFolder($globalStorageInfo['sizePerFolder']);
+        $history->setFilesPerFolder($globalStorageInfo['filesPerFolder']);
+        $history->setSizePerFile($globalStorageInfo['sizePerFile']);
+        $history->setStdvFilesPerUser($globalStorageInfo['stdvNbFilesPerUser']);
+        $history->setStdvFoldersPerUser($globalStorageInfo['stdvNbFoldersPerUser']);
+        $history->setStdvSharesPerUser($globalStorageInfo['stdvNbSharesPerUser']);
 
         return $history;
     }

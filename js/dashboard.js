@@ -2,7 +2,7 @@ var dashboard = angular.module('dashboard', ['dashboard.services.stats', 'dashbo
 
 
 dashboard.controller('statsController', ['$scope', 'statsService', 'chartService', function($scope, statsService, chartService) {
-    $scope.dataTypes = ['nbUsers', 'nbFolders'];
+    $scope.dataTypes = ['totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares', 'sizePerUser', 'foldersPerUser', 'filesPerUser', 'sharesPerUser', 'sizePerFolder', 'filesPerFolder', 'sizePerFile', 'stdvFilesPerUser', 'stdvFoldersPerUser', 'stdvSharesPerUser'];
     $scope.dataType = 'nbUsers';
 
     $scope.nbDaysChoices = [
@@ -89,7 +89,7 @@ angular.module('dashboard.services.chart', [])
                 labels: data.date,
                 datasets: [
                     {
-                        label: "Users",
+                        //label: "Users",
                         fillColor: "rgba(220,220,220,0.5)",
                         strokeColor: "rgba(220,220,220,1)",
                         pointColor: "rgba(220,220,220,1)",

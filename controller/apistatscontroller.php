@@ -64,7 +64,25 @@ class APIStatsController extends APIController {
      * @CORS
      */
     public function historyStats($dataType='all', $range=30) {
-        $statName = array('date', 'defaultQuota', 'totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares');
+        $statName = array(
+            'date',
+            'defaultQuota',
+            'totalUsedSpace',
+            'nbUsers',
+            'nbFolders',
+            'nbFiles',
+            'nbShares',
+            'sizePerUser',
+            'foldersPerUser',
+            'filesPerUser',
+            'sharesPerUser',
+            'sizePerFolder',
+            'filesPerFolder',
+            'sizePerFile',
+            'stdvFilesPerUser',
+            'stdvFoldersPerUser',
+            'stdvSharesPerUser',
+        );
 
         if ($dataType !== 'all') {
             if (!in_array($dataType, $statName)) {
@@ -104,7 +122,7 @@ class APIStatsController extends APIController {
                 }
                 else {
                     $func = 'get' . ucfirst($name);
-                    array_push($arrayDatas[$name], (int)$data->$func());
+                    array_push($arrayDatas[$name], (float)$data->$func());
                 }
             }
         }

@@ -55,6 +55,56 @@
                 <default>0</default>
                 <notnull>true</notnull>
             </field>
+            <field>
+                <name>size_per_user</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>files_per_user</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>folders_per_user</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>shares_per_user</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>size_per_folder</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>files_per_folder</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>size_per_file</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>stdv_files_per_user</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>stdv_folders_per_user</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
+                <name>stdv_shares_per_user</name>
+                <type>float</type>
+                <notnull>true</notnull>
+            </field>
         </declaration>
     </table>
 </database>

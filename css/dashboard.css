@@ -19,7 +19,10 @@
     padding-bottom: 0.5em;
 }
 #space {
-    width: 40em;
+    width: 30em;
+}
+#users {
+    width: 30em;
 }
 #folders {
     clear: left;
