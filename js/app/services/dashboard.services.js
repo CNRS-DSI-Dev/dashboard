@@ -1,7 +1,7 @@
 angular.module('dashboard.services.stats', [])
     .factory('statsService', ['$http', function($http){
         var doGetStats = function() {
-            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/stats'));
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/index'));
         }
         var doGetHistoryStats = function(dataType, nbDays) {
             return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/'+dataType+'/'+nbDays));

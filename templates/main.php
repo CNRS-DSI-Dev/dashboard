@@ -19,36 +19,36 @@
 <div id="container">
 
 <div id="space" class="dataBlock">
-    <p class="header">Disk space <span>{{ stats.globalStorageInfo.totalSize | humanFileSize }}</span></p>
+    <p class="header">Disk space <span>{{ stats.history.totalUsedSpace | humanFileSize }}</span></p>
     <p>User data dir : {{ stats.userDataDir }} </p>
-    <p>Default quota per user : {{ stats.globalStorageInfo.defaultQuota | humanFileSize }}</p>
+    <p>Default quota per user : {{ stats.history.defaultQuota | humanFileSize }}</p>
 </div>
 
 <div id="users" class="dataBlock">
-    <p class="header">Users <span>{{ stats.nbUsers }}</span></p>
-    <p>Size / user <span>{{ stats.globalStorageInfo.sizePerUser | humanFileSize }}</span></p>
-    <p>Files / user <span>{{ stats.globalStorageInfo.filesPerUser | number:2 }} (standard deviation: {{ stats.globalStorageInfo.stdvNbFilesPerUser | number:2 }})</span></p>
-    <p>Folders / user {{ stats.globalStorageInfo.foldersPerUser | number:2 }} (standard deviation: {{ stats.globalStorageInfo.stdvNbFoldersPerUser | number:2 }})</span></p>
+    <p class="header">Users <span>{{ stats.history.nbUsers }}</span></p>
+    <p>Size / user <span>{{ stats.history.sizePerUser | humanFileSize }}</span></p>
+    <p>Files / user <span>{{ stats.history.filesPerUser | number:2 }} (standard deviation: {{ stats.history.stdvFilesPerUser | number:2 }})</span></p>
+    <p>Folders / user {{ stats.history.foldersPerUser | number:2 }} (standard deviation: {{ stats.history.stdvFoldersPerUser | number:2 }})</span></p>
 </div>
 
 <div id="folders" class="dataBlock">
-    <p class="header">Folders <span>{{ stats.globalStorageInfo.totalFolders }} <?php p($_['globalStorageInfo']['totalFolders']);?></span></p>
-    <p>Size / folder <span>{{ stats.globalStorageInfo.sizePerFolder | humanFileSize }}</span></p>
-    <p>Files / folder <span>{{ stats.globalStorageInfo.filesPerFolder | number:2 }}</span></p>
+    <p class="header">Folders <span>{{ stats.history.totalFolders }}</span></p>
+    <p>Size / folder <span>{{ stats.history.sizePerFolder | humanFileSize }}</span></p>
+    <p>Files / folder <span>{{ stats.history.filesPerFolder | number:2 }}</span></p>
     <br>
 </div>
 
 <div id="files" class="dataBlock">
-    <p class="header">Files <span>{{ stats.globalStorageInfo.totalFiles }}</span></p>
-    <p>Size / file <span>{{ stats.globalStorageInfo.sizePerFile | humanFileSize }}</span></p>
+    <p class="header">Files <span>{{ stats.history.nbFiles }}</span></p>
+    <p>Size / file <span>{{ stats.history.sizePerFile | humanFileSize }}</span></p>
     <br>
     <br>
 </div>
 
 <div id="shares" class="dataBlock">
-    <p class="header">Shares <span>{{ stats.globalStorageInfo.totalShares }}</span></p>
-    <p>Shares / user <span>{{ stats.globalStorageInfo.sharesPerUser | number:2 }}</span></p>
-    <p>Standard deviation: {{ stats.globalStorageInfo.stdvNbFilesPerUser | number:2 }}</p>
+    <p class="header">Shares <span>{{ stats.history.totalShares }}</span></p>
+    <p>Shares / user <span>{{ stats.history.sharesPerUser | number:2 }}</span></p>
+    <p>Standard deviation: {{ stats.history.stdvFilesPerUser | number:2 }}</p>
     <br>
     <br>
 </div>

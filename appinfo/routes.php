@@ -18,6 +18,11 @@ $application->registerRoutes($this, array(
             'verb' => 'GET',
         ),
         array(
+            'name' => 'api_stats#index',
+            'url' => '/api/1.0/index',
+            'verb' => 'GET',
+        ),
+        array(
             'name' => 'api_stats#history_stats',
             'url' => '/api/1.0/history_stats/{dataType}/{range}',
             'defaults' => array('dataType' => 'all', 'range' => 30),

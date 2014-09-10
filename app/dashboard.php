@@ -6,6 +6,7 @@ use \OCP\AppFramework\App;
 use \OCA\Dashboard\Controller\PageController;
 use \OCA\Dashboard\Controller\APIStatsController;
 use \OCA\Dashboard\Service\StatService;
+use \OCA\Dashboard\Service\HistoryService;
 use \OCA\Dashboard\Service\StatsTaskService;
 use \OCA\Dashboard\Db\HistoryMapper;
 
@@ -39,13 +40,19 @@ class Dashboard extends App {
                 $c->query('CoreConfig'),
                 $c->query('UserId'),
                 $c->query('StatService'),
-                $c->query('HistoryMapper')
+                $c->query('HistoryService')
             );
         });
 
         $container->registerService('StatService', function($c){
             return new StatService(
                 $c->query('UserManager')
+            );
+        });
+
+        $container->registerService('HistoryService', function($c){
+            return new HistoryService(
+                $c->query('HistoryMapper')
             );
         });
 

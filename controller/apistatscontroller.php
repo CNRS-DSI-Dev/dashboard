@@ -11,17 +11,50 @@ class APIStatsController extends APIController {
     protected $settings;
     protected $userId;
     protected $statService;
-    protected $historyMapper;
+    protected $historyService;
 
-    public function __construct($appName, IRequest $request, IConfig $settings, $userId, $statService, \OCA\Dashboard\Db\HistoryMapper $historyMapper){
+    public function __construct($appName, IRequest $request, IConfig $settings, $userId, $statService, $historyService){
         parent::__construct($appName, $request, 'GET');
         $this->settings = $settings;
         $this->userId = $userId;
         $this->statService = $statService;
-        $this->historyMapper = $historyMapper;
+        $this->historyService = $historyService;
     }
 
     /**
+     * Returns informations from history
+     * @NoCSRFRequired
+     * @CORS
+     */
+    public function index() {
+        $stats = array(
+            'uid'               => $this->userId,
+            'appVersion'        => $this->settings->getAppValue($this->appName, 'installed_version'),
+            'userLastLogin'     => date('d/m/Y H:i:s', $this->settings->getUserValue($this->userId, 'login', 'lastLogin')),
+            'userDataDir'       => $this->statService->getUserDataDir(),
+        );
+
+        try {
+            $history = $this->historyService->getHistoryStats('all', 1);
+        } catch (Exception $e) {
+            $response = new JSONResponse();
+            return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
+        }
+
+        $stats['history'] = $history;
+        foreach($stats['history'] as $key => $value) {
+            $stats['history'][$key] = $value[0];
+        }
+
+        $this->registerResponder('xml', function($stats){
+            return new XMLResponse($stats);
+        });
+
+        return new JSONResponse($stats);
+    }
+
+    /**
+     * Returns real time informations
      * @NoCSRFRequired
      * @CORS
      */
@@ -64,72 +97,13 @@ class APIStatsController extends APIController {
      * @CORS
      */
     public function historyStats($dataType='all', $range=30) {
-        $statName = array(
-            'date',
-            'defaultQuota',
-            'totalUsedSpace',
-            'nbUsers',
-            'nbFolders',
-            'nbFiles',
-            'nbShares',
-            'sizePerUser',
-            'foldersPerUser',
-            'filesPerUser',
-            'sharesPerUser',
-            'sizePerFolder',
-            'filesPerFolder',
-            'sizePerFile',
-            'stdvFilesPerUser',
-            'stdvFoldersPerUser',
-            'stdvSharesPerUser',
-        );
+        $history = array();
 
-        if ($dataType !== 'all') {
-            if (!in_array($dataType, $statName)) {
-                $response = new JSONResponse();
-                return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
-            }
-            $statName = array('date', $dataType);
-        }
-
-        if (intval($range) <= 0) {
+        try {
+            $history = $this->historyService->getHistoryStats($dataType, $range);
+        } catch (Exception $e) {
             $response = new JSONResponse();
             return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
-        }
-
-        $history = array();
-        $history = array();
-        foreach($statName as $name) {
-            $history[$name] = '';
-        }
-
-        // by 30d (30 last days)
-        $datetime = new \DateTime();
-        $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
-        $datetime->setTime(23, 59, 59);
-        $datas = $this->historyMapper->findAllFrom($datetime, $dataType);
-
-        $arrayDatas = array();
-        foreach($statName as $name) {
-            $arrayDatas[$name] = array();
-        }
-        foreach($datas as $data) {
-            foreach($statName as $name) {
-                // date need special processing as we only retain day number
-                if ($name == "date") {
-                    list($date, $time) = explode(' ', $data->getDate());
-                    list($year, $month, $day) = explode('-', $date);
-                    array_push($arrayDatas['date'], $day);
-                }
-                else {
-                    $func = 'get' . ucfirst($name);
-                    array_push($arrayDatas[$name], (float)$data->$func());
-                }
-            }
-        }
-
-        foreach($statName as $name) {
-            $history[$name] = $arrayDatas[$name];
         }
 
         return new JSONResponse($history);
