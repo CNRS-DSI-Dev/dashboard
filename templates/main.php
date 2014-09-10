@@ -2,10 +2,11 @@
 
 \OCP\Util::addStyle('dashboard', 'dashboard');
 
-\OCP\Util::addScript('dashboard', 'angular.min');
+\OCP\Util::addScript('dashboard', 'lib/angular.min');
 \OCP\Util::addScript('dashboard', 'lib/Chart.min');
-\OCP\Util::addScript('dashboard', 'chartjs-directive');
-\OCP\Util::addScript('dashboard', 'dashboard');
+\OCP\Util::addScript('dashboard', 'app/directives/chartjs-directive');
+\OCP\Util::addScript('dashboard', 'app/services/dashboard.services');
+\OCP\Util::addScript('dashboard', 'app/dashboard');
 
 ?>
 
