@@ -106,6 +106,7 @@ class APIStatsController extends APIController {
         // by 30d (30 last days)
         $datetime = new \DateTime();
         $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
+        $datetime->setTime(23, 59, 59);
         $datas = $this->historyMapper->findAllFrom($datetime, $dataType);
 
         $arrayDatas = array();
