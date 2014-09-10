@@ -20,7 +20,7 @@ class StatsTaskService {
     public function run() {
         $now = new \DateTime();
         $now->setTime(0, 0, 0);
-        $datas = $this->historyMapper->countFrom($now->format('Y-m-d H:i:s'));
+        $datas = $this->historyMapper->countFrom($now);
         if (count($datas) <= 0) {
             $history = $this->getStats();
             $this->historyMapper->insert($history);
