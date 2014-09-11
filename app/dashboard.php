@@ -27,9 +27,7 @@ class Dashboard extends App {
             return new PageController(
                 $c->query('AppName'),
                 $c->query('Request'),
-                $c->query('CoreConfig'),
-                $c->query('UserId'),
-                $c->query('StatService')
+                $c->query('L10N')
             );
         });
 
@@ -84,7 +82,8 @@ class Dashboard extends App {
         });
 
         $container->registerService('L10N', function($c) {
-            return \OC_L10N::get($c['AppName']);
+            return $c->query('ServerContainer')->getL10N($c->query('AppName'));
+            // return \OC_L10N::get($c['AppName']);
         });
 
         $container->registerService('CoreConfig', function($c) {

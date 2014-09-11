@@ -4,16 +4,21 @@ namespace OCA\Dashboard\Controller;
 
 use \OCP\AppFramework\Controller;
 use \OCP\IRequest;
+use \OCP\IL10N;
 
 class PageController extends Controller {
 
-    public function __construct($appName, IRequest $request, IConfig $settings, $userId, $statService){
+    protected $trans;
+
+    public function __construct($appName, IRequest $request, IL10N $trans){
         parent::__construct($appName, $request);
-        $this->settings = $settings;
-        $this->userId = $userId;
-        $this->statService = $statService;
+
+        $this->trans = $trans;
     }
 
+    public function getLanguageCode() {
+        return $this->trans->getLanguageCode();
+    }
 
     /**
      * @NoCSRFRequired
