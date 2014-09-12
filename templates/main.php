@@ -32,7 +32,7 @@
 </div>
 
 <div id="folders" class="dataBlock">
-    <p class="header"><?php p($l->t('Folders')); ?> <span>{{ stats.history.totalFolders }}</span></p>
+    <p class="header"><?php p($l->t('Folders')); ?> <span>{{ stats.history.nbFolders }}</span></p>
     <p><?php p($l->t('Size / folder')); ?> <span>{{ stats.history.sizePerFolder | humanFileSize }}</span></p>
     <p><?php p($l->t('Files / folder')); ?> <span>{{ stats.history.filesPerFolder | number:2 }}</span></p>
     <br>
@@ -46,7 +46,7 @@
 </div>
 
 <div id="shares" class="dataBlock">
-    <p class="header"><?php p($l->t('Shares')); ?> <span>{{ stats.history.totalShares }}</span></p>
+    <p class="header"><?php p($l->t('Shares')); ?> <span>{{ stats.history.nbShares }}</span></p>
     <p><?php p($l->t('Shares / user')); ?> <span>{{ stats.history.sharesPerUser | number:2 }}</span></p>
     <p><?php p($l->t('Standard deviation')); ?>: {{ stats.history.stdvFilesPerUser | number:2 }}</p>
     <br>
