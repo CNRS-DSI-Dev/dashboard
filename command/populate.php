@@ -38,7 +38,7 @@ class Populate extends Command {
         $stats['stdvNbFoldersPerUser'] = $stats['nbFolders'];
         $stats['stdvNbSharesPerUser'] = $stats['nbShares'];
 
-        for($i=0 ; $i <= NB; $i++) {
+        for($i=0 ; $i < NB; $i++) {
             $date->add(new \DateInterval('P1D'));
             $output->writeln('<info>' . 'Adding stats for date ' . $date->format('Y-m-d H:i:s') . '</info>');
 
