@@ -13,27 +13,28 @@ class StatService {
     }
 
     public function getUserDataDir() {
-        return \OCP\Config::getSystemValue('datadirectory', '');
+        if (!isset($this->datas['dataDirectory'])) {
+            $this->datas['dataDirectory'] =  \OCP\Config::getSystemValue('datadirectory', \OC::$SERVERROOT.'/data');
+        }
+        return $this->datas['dataDirectory'];
     }
 
     public function countUsers() {
-        if (isset($this->datas['nbUsers'])) {
-            return $this->datas['nbUsers'];
-        }
+        if (!isset($this->datas['nbUsers'])) {
+            $nbUsers = 0;
 
-        $nbUsers = 0;
+            $nbUsersByBackend = $this->userManager->countUsers();
 
-        $nbUsersByBackend = $this->userManager->countUsers();
-
-        if (!empty($nbUsersByBackend) and is_array($nbUsersByBackend)) {
-            foreach($nbUsersByBackend as $backend => $count) {
-                $nbUsers += $count;
+            if (!empty($nbUsersByBackend) and is_array($nbUsersByBackend)) {
+                foreach($nbUsersByBackend as $backend => $count) {
+                    $nbUsers += $count;
+                }
             }
+
+            $this->datas['nbUsers'] = $nbUsers;
         }
 
-        $this->datas['nbUsers'] = $nbUsers;
-
-        return $nbUsers;
+        return $this->datas['nbUsers'];
     }
 
     public function getGlobalStorageInfo() {
@@ -43,16 +44,46 @@ class StatService {
         $stats['totalFolders'] = 0;
         $stats['totalShares'] = 0;
         $stats['totalSize'] = 0;
-        $stats['users'] = array();
         $stats['defaultQuota'] = \OCP\Util::computerFileSize(\OCP\Config::getAppValue('files', 'default_quota', 'none'));
 
+        // initialize variances
         $nbFoldersVariance = new Variance;
         $nbFilesVariance = new Variance;
         $nbSharesVariance = new Variance;
 
-        $this->getFilesStat($view, '', $stats);
+        $dataRoot = $this->getUserDataDir() . '/';
 
-        $stats['totalFolders'] -= $this->countUsers();
+        // 'users' is a temporary container, won't be send back
+        $stats['users'] = array();
+        $users = \OCP\User::getUsers();
+        foreach ($users as $uid) {
+            $userRoot = \OC_User::getHome($uid);
+            $userDirectory = str_replace($dataRoot, '', $userRoot) . '/files';
+
+            $stats['users'][$uid] = array();
+            $stats['users'][$uid]['nbFiles'] = 0;
+            $stats['users'][$uid]['nbFolders'] = 0;
+            $stats['users'][$uid]['nbShares'] = 0;
+            $stats['users'][$uid]['filesize'] = 0;
+            //$stats['users'][$uid]['quota'] = \OC_Util::getUserQuota($uid);
+
+            // extract datas
+            $this->getFilesStat($view, $userDirectory, $stats['users'][$uid]);
+
+            // files stats
+            $stats['totalFolders'] += $stats['users'][$uid]['nbFolders'];
+            $stats['totalFiles'] += $stats['users'][$uid]['nbFiles'];
+            $stats['totalSize'] += $stats['users'][$uid]['filesize'];
+
+            // shares
+            $stats['users'][$uid]['nbShares'] = $this->getSharesStats($uid);
+            $stats['totalShares'] += $stats['users'][$uid]['nbShares'];
+
+            // variance evolutions
+            $nbFoldersVariance->addValue($stats['users'][$uid]['nbFolders']);
+            $nbFilesVariance->addValue($stats['users'][$uid]['nbFiles']);
+            $nbSharesVariance->addValue($stats['users'][$uid]['nbShares']);
+        }
 
         // some basic stats
         $stats['filesPerUser'] = $stats['totalFiles'] / $this->countUsers();
@@ -62,68 +93,42 @@ class StatService {
         $stats['sizePerUser'] = $stats['totalSize'] / $this->countUsers();
         $stats['sizePerFile'] = $stats['totalSize'] / $stats['totalFiles'];
         $stats['sizePerFolder'] = $stats['totalSize'] / $stats['totalFolders'];
-
-        foreach($stats['users'] as $owner => $datas) {
-            $nbFoldersVariance->addValue($data['nbFolders']);
-            $nbFilesVariance->addValue($datas['nbFiles']);
-
-            // shares
-            $stats['users'][$owner]['nbShares'] = $this->getSharesStats($owner);
-            $stats['totalShares'] += $stats['users'][$owner]['nbShares'];
-            $nbSharesVariance->addValue($stats['users'][$owner]['nbShares']);
-        }
-
         $stats['sharesPerUser'] = $stats['totalShares'] / $this->countUsers();
 
-        $stats['meanNbFilesPerUser'] = $nbFilesVariance->getMean();
+        // variance
+        //$stats['meanNbFilesPerUser'] = $nbFilesVariance->getMean();
         $stats['stdvNbFilesPerUser'] = $nbFilesVariance->getStandardDeviation();
         $stats['stdvNbFoldersPerUser'] = $nbFoldersVariance->getStandardDeviation();
         $stats['stdvNbsharesPerUser'] = $nbSharesVariance->getStandardDeviation();
+
+        // don't send back 'users' details
+        //unset($stats['users']);
 
         return $stats;
     }
 
     /**
-     * Get some global stats
+     * Get some user informations on files and folders
      * @param \OC\Files\View $view
      * @param string $path the path
-     * @param mixed $stats array to store the extrated stats
+     * @param mixed $datas array to store the extrated infos
      */
-    protected function getFilesStat($view, $path='', &$stats) {
+    protected function getFilesStat($view, $path='', &$datas) {
         $dc = $view->getDirectoryContent($path);
+
         foreach($dc as $item) {
-            $owner = $this->getOwner($item->getPath());
-
-            if (!isset($stats['users'][$owner])) {
-                if ($item->getType() == \OCP\Files\FileInfo::TYPE_FOLDER) {
-                    $stats['users'][$owner] = array();
-                    $stats['users'][$owner]['nbFiles'] = 0;
-                    $stats['users'][$owner]['nbFolders'] = 0;
-                    $stats['users'][$owner]['nbShares'] = 0;
-                    $stats['users'][$owner]['filesize'] = 0;
-                    $stats['users'][$owner]['quota'] = \OC_Util::getUserQuota($owner);
-                }
-                else {
-                    // do not get files in rootDir
-                    continue;
-                }
-            }
-
             if ($item->isShared()) {
                 continue;
             }
 
             // if folder, recurse
             if ($item->getType() == \OCP\Files\FileInfo::TYPE_FOLDER) {
-                $stats['totalFolders']++;
-                $stats['users'][$owner]['nbFolders']++;
-                $this->getFilesStat($view, $item->getPath(), $stats);
+                $datas['nbFolders']++;
+                $this->getFilesStat($view, $item->getPath(), $datas);
             }
             else {
-                $stats['users'][$owner]['nbFiles']++;
-                $stats['totalFiles']++;
-                $stats['users'][$owner]['filesize'] += $item->getSize();
-                $stats['totalSize'] += $item->getSize();
+                $datas['nbFiles']++;
+                $datas['filesize'] += $item->getSize();
             }
         }
     }
