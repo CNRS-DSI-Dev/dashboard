@@ -43,7 +43,23 @@ A command line utility exists, allowing to populate this app history table with 
 Usage:
 
 ```shell
+cd [owncloud]/
 ./occ dashboard:populate
 ```
+where [owncloud] is the install folder of your owncloud instance
+
 Warning : datas are added to the table, so you may want to truncate the `*prefix*_dashboard_history` table before running this command.
 
+## Contributing
+
+This app is developed for ownCoRe CNRS project, an internal deployement of ownCloud at CNRS (French National Center for Scientific Research).
+
+If you want to be informed about owCoRe project at CNRS, please contact david.rousse@dsi.cnrs.fr or gilian.gambini@dsi.cnrs.fr
+
+## License and Author
+
+|                      |                                          |
+|:---------------------|:-----------------------------------------|
+| **Author:**          | Patrick Paysant (<ppaysant@linagora.com>)
+| **Copyright:**       | Copyright (c) 2014 CNRS DSI
+| **License:**         | AGPL v3, see the COPYING file.
