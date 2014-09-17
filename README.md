@@ -2,6 +2,8 @@
 
 Owncloud 7 app that summarizes some global informations on local owncloud instance usage.
 
+![](https://cloud.githubusercontent.com/assets/8192056/4301181/6db9488e-3e4c-11e4-8390-f799b8372ff8.png)
+
 These informations are gathered :
 * total used space,
 * nb of users,
