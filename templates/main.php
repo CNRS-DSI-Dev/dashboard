@@ -58,7 +58,6 @@
     <p><?php p($l->t('Shares / user')); ?>: <span>{{ stats.history.sharesPerUser | number:2 }}</span></p>
     <p><?php p($l->t('Standard deviation')); ?>: {{ stats.history.stdvFilesPerUser | number:2 }}</p>
     <br>
-    <br>
 </div>
 
 <div class="history">
