@@ -46,7 +46,7 @@ Usage:
 cd [owncloud]/
 ./occ dashboard:populate
 ```
-where [owncloud] is the install folder of your owncloud instance
+where `[owncloud]` is the install folder of your owncloud instance
 
 Warning : datas are added to the table, so you may want to truncate the `*prefix*_dashboard_history` table before running this command.
 
@@ -63,3 +63,7 @@ If you want to be informed about owCoRe project at CNRS, please contact david.ro
 | **Author:**          | Patrick Paysant (<ppaysant@linagora.com>)
 | **Copyright:**       | Copyright (c) 2014 CNRS DSI
 | **License:**         | AGPL v3, see the COPYING file.
+
+* Icons are from [GLYPHICONS.com](http://glyphicons.com/) released under [Creative Commons Attribution 3.0 Unported (CC BY 3.0)](http://creativecommons.org/licenses/by/3.0/).
+* This app use an angular directive provided on github by [earlonrails](http://earlonrails.github.io/angular-chartjs-directive/).
+* [Chart.js](http://www.chartjs.org/) is open source and available under the [MIT license](http://opensource.org/licenses/MIT).

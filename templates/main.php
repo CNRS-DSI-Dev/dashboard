@@ -73,6 +73,7 @@
 
 <div id="footer">
     <p>You're user id #{{ stats.uid }} (last log : {{ stats.userLastLogin }}) - Dashboard version #{{ stats.appVersion }}</p>
+    <p>Icons provided by <a href="http://glyphicons.com/">GLYPHICONS.com</a>, released under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported (CC BY 3.0)</a></p>
 </div>
 
 </div>
