@@ -31,19 +31,19 @@
     margin-left: 2em;
 }
 #space p.header {
-    background: url("/apps/dashboard/img/space.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
+    background: url("../img/space.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
 }
 #users p.header {
-    background: url("/apps/dashboard/img/group.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
+    background: url("../img/group.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
 }
 #folders p.header {
-    background: url("/apps/dashboard/img/folder.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
+    background: url("../img/folder.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
 }
 #files p.header {
-    background: url("/apps/dashboard/img/file.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
+    background: url("../img/file.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
 }
 #shares p.header {
-    background: url("/apps/dashboard/img/share.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
+    background: url("../img/share.png") no-repeat scroll 5px 12px rgba(0, 0, 0, 0);
 }
 #space.dataBlock p.header, #users.dataBlock p.header, #folders.dataBlock p.header, #files.dataBlock p.header, #shares.dataBlock p.header {
     font-weight: bold;
