@@ -108,7 +108,7 @@ class StatService {
         //$stats['meanNbFilesPerUser'] = $nbFilesVariance->getMean();
         $stats['stdvNbFilesPerUser'] = $nbFilesVariance->getStandardDeviation();
         $stats['stdvNbFoldersPerUser'] = $nbFoldersVariance->getStandardDeviation();
-        $stats['stdvNbsharesPerUser'] = $nbSharesVariance->getStandardDeviation();
+        $stats['stdvNbSharesPerUser'] = $nbSharesVariance->getStandardDeviation();
 
         // don't send back 'users' details
         //unset($stats['users']);
