@@ -13,6 +13,7 @@ namespace OCA\Dashboard\Controller;
 use \OCP\AppFramework\APIController;
 use \OCP\AppFramework\Http\JSONResponse;
 use \OCP\IRequest;
+use \OCP\IConfig;
 
 class APIStatsController extends APIController {
 
