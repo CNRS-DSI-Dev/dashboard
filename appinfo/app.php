@@ -12,7 +12,7 @@
     'id' => 'dashboard',
     'order' => 10,
     'href' => \OCP\Util::linkToRoute('dashboard.page.index'),
-    'icon' => \OCP\Util::imagePath('dashboard', 'dashboard.svg'),
+    'icon' => \OCP\Util::imagePath('dashboard', 'dashboard.png'),
     'name' => \OC_L10N::get('dashboard')->t('Dashboard')
 ));
 
