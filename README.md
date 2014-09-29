@@ -52,6 +52,12 @@ where `[owncloud]` is the install folder of your owncloud instance
 
 Warning : datas are added to the table, so you may want to truncate the `*prefix*_dashboard_history` table before running this command.
 
+## Install
+
+The dashboard app must be put in the owncloud apps directory, with the name "dashboard" (without any number).
+
+The stats will be updated with the next cron run. Stats are timestamped / logged only once a day.
+
 ## Contributing
 
 This app is developed for an internal deployement of ownCloud at CNRS (French National Center for Scientific Research).
