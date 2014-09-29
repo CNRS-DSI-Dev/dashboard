@@ -47,7 +47,7 @@ class APIStatsController extends APIController {
             $history = $this->historyService->getHistoryStats('all', 1);
         } catch (Exception $e) {
             $response = new JSONResponse();
-            return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
+            return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);
         }
 
         $stats['history'] = $history;
@@ -112,7 +112,7 @@ class APIStatsController extends APIController {
             $history = $this->historyService->getHistoryStats($dataType, $range);
         } catch (Exception $e) {
             $response = new JSONResponse();
-            return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
+            return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);
         }
 
         return new JSONResponse($history);
