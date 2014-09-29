@@ -54,9 +54,9 @@ Warning : datas are added to the table, so you may want to truncate the `*prefix
 
 ## Contributing
 
-This app is developed for ownCoRe CNRS project, an internal deployement of ownCloud at CNRS (French National Center for Scientific Research).
+This app is developed for an internal deployement of ownCloud at CNRS (French National Center for Scientific Research).
 
-If you want to be informed about owCoRe project at CNRS, please contact david.rousse@dsi.cnrs.fr or gilian.gambini@dsi.cnrs.fr
+If you want to be informed about this ownCloud project at CNRS, please contact david.rousse@dsi.cnrs.fr, gilian.gambini@dsi.cnrs.fr or marc.dexet@dsi.cnrs.fr
 
 ## License and Author
 
