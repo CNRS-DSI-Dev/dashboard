@@ -12,7 +12,7 @@ angular.module('dashboard.services.stats', [])
             return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/index'));
         }
         var doGetHistoryStats = function(dataType, nbDays) {
-            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/'+dataType+'/'+nbDays));
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/' + dataType + '/' + nbDays + '/1'));
         }
         return {
             getStats: function() { return doGetStats(); },
@@ -22,7 +22,7 @@ angular.module('dashboard.services.stats', [])
 
 angular.module('dashboard.services.chart', [])
     .factory('chartService', [function(){
-        var doConfChart = function(data, item) {
+        var doConfChart = function(data, item, unit) {
             if (!data) {
                 return {};
             }
@@ -42,14 +42,21 @@ angular.module('dashboard.services.chart', [])
                 ]
             }
 
+            if (unit) {
+                unit = " " + unit.trim();
+            }
+
             var options = {
+                scaleShowLabels: true,
+                scaleLabel: "<%=value%>" + _.escape(unit),
+                scaleIntegersOnly: true,
                 responsive: true,
-                showTooltips: true,
+                showTooltips: true
             }
 
             return {"data": dataHistoryConf, "options": options};
         }
         return {
-            confChart: function(data, item) { return doConfChart(data, item) }
+            confChart: function(data, item, unit) { return doConfChart(data, item, unit) }
         }
     }]);

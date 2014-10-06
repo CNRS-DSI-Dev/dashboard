@@ -105,11 +105,11 @@ class APIStatsController extends APIController {
      * @NoCSRFRequired
      * @CORS
      */
-    public function historyStats($dataType='all', $range=30) {
+    public function historyStats($dataType='all', $range=30, $wanthumanreadable=1) {
         $history = array();
 
         try {
-            $history = $this->historyService->getHistoryStats($dataType, $range);
+            $history = $this->historyService->getHistoryStats($dataType, $range, $wanthumanreadable);
         } catch (Exception $e) {
             $response = new JSONResponse();
             return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);
