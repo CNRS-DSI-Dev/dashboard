@@ -12,11 +12,13 @@ namespace OCA\Dashboard\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 use OC\DB\Connection;
 
 // Number of lines inserted
-define("NB", 60);
+define("DEFAULT_NB", 60);
 
 class Populate extends Command {
 
@@ -25,15 +27,23 @@ class Populate extends Command {
 
         $this
             ->setName('dashboard:populate')
-            ->setDescription('Populate ' . $prefix . 'dashboard_history table with random test datas');
+            ->setDescription('Populate ' . $prefix . 'dashboard_history table with random test datas')
+            ->addArgument('nb', InputArgument::OPTIONAL, 'Number of days you want stats for.', DEFAULT_NB)
+            ->addOption('truncate', 't', InputOption::VALUE_NONE, 'Delete all history datas before generating new ones.');
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $output->writeln('Test OK');
+        $output->writeln('Beginning');
+
+        $nb = (int)$input->getArgument('nb');
+
+        if ($input->getOption('truncate')) {
+            $this->truncate();
+        }
 
         $date = new \DateTime();
-        $date->sub(new \DateInterval('P' . NB . 'D'));
+        $date->sub(new \DateInterval('P' . $nb . 'D'));
 
         // arbitrary starting datas
         $stats['defaultQuota'] = 1073741824; // 1GB
@@ -46,7 +56,7 @@ class Populate extends Command {
         $stats['stdvNbFoldersPerUser'] = $stats['nbFolders'];
         $stats['stdvNbSharesPerUser'] = $stats['nbShares'];
 
-        for($i=0 ; $i < NB; $i++) {
+        for($i=0 ; $i < $nb; $i++) {
             $date->add(new \DateInterval('P1D'));
             $output->writeln('<info>' . 'Adding stats for date ' . $date->format('Y-m-d H:i:s') . '</info>');
 
@@ -72,6 +82,8 @@ class Populate extends Command {
 
             $this->addHistory($date, $stats);
         }
+
+        $output->writeln('Done');
     }
 
     protected function addValue($stat, $value) {
@@ -125,5 +137,12 @@ class Populate extends Command {
             'stdvNbFoldersPerUser' => $stats['stdvNbFoldersPerUser'],
             'stdvNbSharesPerUser' => $stats['stdvNbSharesPerUser'],
         ));
+    }
+
+    protected function truncate() {
+        $DB = \OC_DB::getConnection();
+
+        $sql = "TRUNCATE *PREFIX*dashboard_history";
+        $DB->executeQuery($sql);
     }
 }
