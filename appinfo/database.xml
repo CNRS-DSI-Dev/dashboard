@@ -21,38 +21,33 @@
             </field>
             <field>
                 <name>default_quota</name>
-                <type>integer</type>
-                <default>0</default>
+                <type>bigint</type>
                 <notnull>true</notnull>
+                <unsigned>true</unsigned>
             </field>
             <field>
                 <name>total_used_space</name>
-                <type>integer</type>
-                <default>0</default>
+                <type>bigint</type>
                 <notnull>true</notnull>
             </field>
             <field>
                 <name>nb_users</name>
-                <type>integer</type>
-                <default>0</default>
+                <type>bigint</type>
                 <notnull>true</notnull>
             </field>
             <field>
                 <name>nb_folders</name>
-                <type>integer</type>
-                <default>0</default>
+                <type>bigint</type>
                 <notnull>true</notnull>
             </field>
             <field>
                 <name>nb_files</name>
-                <type>integer</type>
-                <default>0</default>
+                <type>bigint</type>
                 <notnull>true</notnull>
             </field>
             <field>
                 <name>nb_shares</name>
-                <type>integer</type>
-                <default>0</default>
+                <type>bigint</type>
                 <notnull>true</notnull>
             </field>
             <field>
