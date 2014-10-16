@@ -24,5 +24,12 @@ $c = $app->getContainer();
     'name' => $c->query('L10N')->t('Dashboard')
 ));
 
-// cron task
+/**
+ * register admin settings section
+ */
+\OCP\App::registerAdmin('dashboard', 'settings/settings-admin');
+
+/**
+ * cron task
+ */
 \OCP\Backgroundjob::addRegularTask('\OCA\dashboard\Cron\statsTask', 'run');
