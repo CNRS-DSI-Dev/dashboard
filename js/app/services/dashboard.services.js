@@ -60,3 +60,13 @@ angular.module('dashboard.services.chart', [])
             confChart: function(data, item, unit) { return doConfChart(data, item, unit) }
         }
     }]);
+
+angular.module('dashboard.services.groups', [])
+    .factory('groupsService', ['$http', function($http){
+        var doIsGroupsEnabled = function() {
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/is_groups_enabled'));
+        }
+        return {
+            isGroupsEnabled: function() { return doIsGroupsEnabled(); },
+        };
+    }]);

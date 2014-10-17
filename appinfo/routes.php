@@ -44,5 +44,16 @@ $application->registerRoutes($this, array(
             'verb' => 'OPTIONS',
             'requirements' => array('path' => '.+'),
         ),
+        array(
+            'name' => 'api_groups#is_groups_enabled',
+            'url' => '/api/1.0/is_groups_enabled',
+            'verb' => 'GET',
+        ),
+        array(
+            'name' => 'api_groups#groups',
+            'url' => '/api/1.0/groups/{search}',
+            'default' => array('search' => ''),
+            'verb' => 'GET',
+        ),
     ),
 ));

@@ -8,39 +8,37 @@
  * @license This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
 
+\OCP\Util::addStyle('dashboard', 'settings-admin');
+
 \OCP\Util::addScript('dashboard', 'lib/angular');
 \OCP\Util::addScript('dashboard', 'lib/angucomplete-alt');
-\OCP\Util::addScript('dashboard', 'settings-admin');
-
-\OCP\Util::addStyle('dashboard', 'settings-admin');
+\OCP\Util::addScript('dashboard', 'app/settings-admin');
+\OCP\Util::addScript('dashboard', 'app/services/dashboard.services');
 
 ?>
 <div id="dashboard" class="section" ng-controller="groupsController">
     <h2><?php p($l->t('Dashboard')); ?></h2>
 
     <p>
-        <input type="checkbox" name="dashboardgroups_enabled" id="dashboardGroupsEnabled"
-           value="1" <?php if ($_['dashboardGroupsEnabled']) print_unescaped('checked="checked"'); ?> />
+        <input type="checkbox" ng-model="dashboardGroupsEnabled"
+            ng-true-value="yes" ng-false-value="no" ng-change="storeChoice()">
         <label for="dashboardGroupsEnabled"><?php p($l->t('Allow to get and store stats for some groups.'));?></label>
     </p>
 
-    <div id="dashboardGroups" class="indent <?php if (!$_['dashboardGroupsEnabled'] || $_['dashboardGroupsEnabled'] === 'no') p('hidden'); ?>">
+    <div id="dashboardGroups" class="indent" ng-show="dashboardGroupsEnabled" ng-cloak class="ng-cloak">
 
         <h3>List of groups.<p>
-
-        <div>
-            <p>{{ groupList | json }}</p>
-        </div>
 
         <div id="searchGroup">
             <angucomplete-alt id="groups"
                 placeholder="{{ searchPlaceholder }}"
                 pause="400"
                 selected-object="addGroup"
-                remote-url="{{ lotsofgroupsGroupsUrl }}"
+                remote-url="{{ dashboardGroupsUrl }}"
                 remote-url-data-field="groups"
                 minlength = "1"
-                title-field="name" ></angucomplete-alt>
+                title-field="name"
+                clear-selected="true"></angucomplete-alt>
 
             <?php if (\OC_User::isAdminUser(\OCP\User::getUser())) { ?>
             <span class="utils">
@@ -50,6 +48,10 @@
             </span>
             <?php } ?>
 
+        </div>
+
+        <div class="groupList">
+            <p>{{ groupList | json }}</p>
         </div>
 
     </div>

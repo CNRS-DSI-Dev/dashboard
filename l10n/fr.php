@@ -16,4 +16,5 @@
 "Shares / user" => "Partages / utilisateur ",
 "Standard deviation" => "Ecart-type ",
 "standard deviation" => "écart-type ",
+"Search group" => "Chercher parmi les groupes",
 );
