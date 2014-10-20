@@ -49,7 +49,8 @@ class GroupsService
     {
         $appConfig = \OC::$server->getAppConfig();
         $result = $appConfig->getValue('dashboard', 'dashboard_groups_enabled', 'no');
-        // return ($result === 'yes') ? true : false;
+
         return $result;
     }
+
 }

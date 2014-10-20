@@ -11,7 +11,7 @@ display: none !important;
     float: left;
 }
 
-.angucomplete-dropdown {
+#dashboard .angucomplete-dropdown {
     overflow-y: auto;
     max-height: 130px;
     border: 1px solid #ddd;
@@ -28,15 +28,37 @@ display: none !important;
     background-color: #ccc;
 }
 
+#dashboard.section #searchGroup .angucomplete-row .angucomplete-title {
+    font-size: 13px;
+}
+
 #dashboard #groups_value {
     width: 15em;
 }
 
-#dashboard .groupList {
+#dashboard #groupList {
     margin-left: 18em;
     border: 1px solid #ddd;
     padding: 3px;
     border-radius: 3px;
     margin: 3px 3px 3px 18em;
     font-size: 13px;
+}
+
+#dashboard .groupItem {
+    padding: 1px 5px;
+    margin: 0 3px;
+    border: 1px solid #ddd;
+}
+
+#dashboard .groupItem span {
+    cursor: pointer;
+}
+
+/*div#dashboard.section div#dashboardGroups.indent h3 div#groupList.groupList_saved*/
+#dashboard #groupList.groupList_changed {
+  background: lightYellow;
+}
+#dashboard #groupList.groupList_saved {
+  background: lightGreen;
 }

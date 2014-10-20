@@ -22,10 +22,12 @@ dashboardApp.config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.headers.common.requesttoken = oc_requesttoken;
 }]);
 
-dashboardApp.controller('groupsController', ['$scope', 'groupsService', function($scope, groupsService) {
+dashboardApp.controller('groupsController', ['$scope', '$filter', 'groupsService', function($scope, $filter, groupsService) {
     $scope.dashboardGroupsUrl = OC.generateUrl('/apps/dashboard/api/1.0/groups/');
     $scope.searchPlaceholder = t('dashboard', 'Search group');
     $scope.dashboardGroupsEnabled = 'no';
+
+    // Will contain a list of group object {'name':'group_name','id':'group_id'}
     $scope.groupList = [];
 
     /**
@@ -36,6 +38,15 @@ dashboardApp.controller('groupsController', ['$scope', 'groupsService', function
             .success(function(data) {
                 $scope.dashboardGroupsEnabled = data.enabled;
             });
+
+        OC.AppConfig.getValue('dashboard', 'dashboard_group_list', [], function(data) {
+            if (data == null) {
+                $scope.groupList = [];
+            }
+            else {
+                $scope.groupList = JSON.parse(data);
+            }
+        });
     }
     $scope.init();
 
@@ -51,6 +62,43 @@ dashboardApp.controller('groupsController', ['$scope', 'groupsService', function
      * @param object group (as returned by angucomplete-alt directive)
      */
     $scope.addGroup = function(group) {
-        $scope.groupList.push(group.originalObject.id);
+        var truc = _.filter($scope.groupList, function(elt) {
+            return elt.id == group.originalObject.id;
+        });
+        if (truc.length > 0) {
+            OC.dialogs.alert(
+                t('dashboard', 'This group is already in the list'),
+                t('dashboard', 'Error creating group')
+            );
+            return
+        }
+
+        $scope.groupList.push({
+            'name': group.originalObject.name,
+            'id': group.originalObject.id
+        });
+        $scope.updateGroupList();
+    }
+
+    /**
+     * Remove a group from the list
+     * @param string groupId
+     */
+    $scope.removeGroup = function(groupId) {
+        $scope.groupList = _.reject($scope.groupList, function(group) {
+            return group.id == groupId;
+        });
+        $scope.updateGroupList();
+    }
+
+    $scope.updateGroupList = function() {
+        var groupListElt = $('#groupList');
+
+        groupListElt.addClass("groupList_changed");
+        OC.AppConfig.postCall('setValue',{app:'dashboard',key:'dashboard_group_list',value:angular.toJson($scope.groupList)}, function() {
+            groupListElt.removeClass("groupList_changed");
+            groupListElt.addClass("groupList_saved");
+            groupListElt.removeClass("groupList_saved",2000);
+        });
     }
 }]);
