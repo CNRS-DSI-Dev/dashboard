@@ -10,7 +10,25 @@
 
 namespace OCA\Dashboard\Service;
 
-class StatService {
+use OCA\Dashboard\Lib\Helper;
+
+class PseudoUser
+{
+    protected $uid;
+
+    function __construct($uid)
+    {
+        $this->uid = $uid;
+    }
+
+    function getUID($uid)
+    {
+        return $this->uid;
+    }
+}
+
+class StatService
+{
 
     protected $userManager;
     protected $rootStorage;
@@ -48,6 +66,10 @@ class StatService {
         return $this->datas['nbUsers'];
     }
 
+    /**
+     * Get some global usage stats (file nb, user nb, ...)
+     * @param string $gid Id of the group of users from which you want stats (means "all users" if $gid = '')
+     */
     public function getGlobalStorageInfo() {
         $view = new \OC\Files\View();
         $stats = array();
@@ -62,9 +84,20 @@ class StatService {
         $nbFilesVariance = new Variance;
         $nbSharesVariance = new Variance;
 
+        $dataRoot = $this->getUserDataDir() . '/';
+
+        // user list
+        $users = \OCP\User::getUsers();
+
+        $statsByGroup = false;
+        // stat enabled groups list
+        if (Helper::isDashboardGroupsEnabled()) {
+            $statsByGroup = true;
+            $statEnabledGroupList = Helper::getDashboardGroupList();
+        }
+
         // 'users' is a temporary container, won't be send back
         $stats['users'] = array();
-        $users = \OCP\User::getUsers();
         foreach ($users as $uid) {
             $userDirectory = $this->rootStorage . '/' . $uid . '/files';
 
@@ -73,6 +106,26 @@ class StatService {
             $stats['users'][$uid]['nbFolders'] = 0;
             $stats['users'][$uid]['nbShares'] = 0;
             $stats['users'][$uid]['filesize'] = 0;
+
+            // group stats ?
+            $groupList = array();
+            if ($statsByGroup) {
+                // $pseudoUser = new PseudoUser($uid);
+                $user = $this->userManager->get($uid);
+$f = fopen('/tmp/truc.log', 'a');
+fputs($f, $uid . "\n" . print_r($user, true) . "\n");
+fclose($f);
+
+                // $userGroups = $this->groupManager->getUserGroups($pseudoUser);
+// $f = fopen('/tmp/truc.log', 'a');
+// fputs($f, $uid . "\n" . print_r($userGroups, true) . "\n");
+// fclose($f);
+
+                // $groupList = array_intersect_key($userGroups, $statEnabledGroupList);
+// $f = fopen('/tmp/truc.log', 'a');
+// fputs($f, $uid . "\n" . print_r($groupList, true) . "\n");
+// fclose($f);
+            }
 
             // extract datas
             $this->getFilesStat($view, $userDirectory, $stats['users'][$uid]);

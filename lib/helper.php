@@ -23,4 +23,19 @@ class Helper
         return ($result === 'yes') ? true : false;
     }
 
+    /**
+     * Returns the list of "stat enabled" groups
+     * @return array
+     */
+    public static function getDashboardGroupList()
+    {
+        $appConfig = \OC::$server->getAppConfig();
+        $result = $appConfig->getValue('dashboard', 'dashboard_group_list', '');
+
+        if (!is_array($result)) {
+            $result = array();
+        }
+
+        return json_decode($result);
+    }
 }

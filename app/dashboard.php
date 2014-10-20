@@ -96,6 +96,10 @@ class Dashboard extends App {
             return $c->query('ServerContainer')->getUserManager();
         });
 
+        $container->registerService('GroupManager', function($c) {
+            return $c->query('ServerContainer')->getGroupManager();
+        });
+
         /**
          * Database Layer
          */
