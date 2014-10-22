@@ -26,7 +26,7 @@ class HistoryService {
      * @throws OCA\Dashboard\Service\HistoryStatsUnknownDatatypeException
      * @throws OCA\Dashboard\Service\HistoryStatsInvalidRangeException
      */
-    public function getHistoryStats($dataType='all', $range=30, $wantHumanReadable) {
+    public function getHistoryStats($dataType='all', $range=30, $wantHumanReadable = 1) {
         $statName = array(
             'date',
             'defaultQuota',
