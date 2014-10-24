@@ -52,7 +52,12 @@ class APIStatsController extends APIController {
 
         $stats['history'] = $history;
         foreach($stats['history'] as $key => $value) {
-            $stats['history'][$key] = $value[0];
+            if (isset($value[0])) {
+                $stats['history'][$key] = $value[0];
+            }
+            else {
+                $stats['history'][$key] = '';
+            }
         }
 
         $this->registerResponder('xml', function($stats){
