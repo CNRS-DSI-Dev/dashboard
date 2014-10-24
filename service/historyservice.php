@@ -138,18 +138,18 @@ class HistoryService {
         $result = array();
 
         // init
-        $unitUsed = array();
         $greater = 0; // greater nb of type of unit used
         $unitChoice = 0; // index of this unit (that has the greater nb of values)
+        $unitUsed = array();
         foreach($units as $k => $v) {
             $unitUsed[$k] = 0;
         }
 
+        // find the most used unit
         foreach ($datas as $data) {
             $i = 1;
             $tempo = $data;
-            while ($tempo / 1024 >= 1) {
-                $data = $data / 1024;
+            while ($tempo / 1024 >= 1 and $i < count($units)) {
                 $tempo = $tempo / 1024;
                 $i++;
             }
@@ -159,6 +159,11 @@ class HistoryService {
                 $greater = $unitUsed[$i];
                 $unitChoice = $i;
             }
+        }
+
+        // adapt each data to the previously selected unit
+        foreach ($datas as $data) {
+            $data *= pow(1024, 1 - $unitChoice);
 
             array_push($result, round($data, 2));
         }
