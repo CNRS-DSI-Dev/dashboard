@@ -23,7 +23,7 @@ define("DEFAULT_NB", 60);
 class Populate extends Command {
 
     protected function configure() {
-        $prefix = \OC_Config::getValue('dbtableprefix', 'oc_');
+        $prefix = \OCP\Config::getSystemValue('dbtableprefix', 'oc_');
 
         $this
             ->setName('dashboard:populate')
