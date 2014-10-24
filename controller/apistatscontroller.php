@@ -32,6 +32,7 @@ class APIStatsController extends APIController {
 
     /**
      * Returns informations from history
+     * @NoAdminRequired
      * @NoCSRFRequired
      * @CORS
      */
@@ -90,6 +91,7 @@ class APIStatsController extends APIController {
     }
 
     /**
+     * @NoAdminRequired
      * @NoCSRFRequired
      * @CORS
      */
@@ -107,6 +109,8 @@ class APIStatsController extends APIController {
     }
 
     /**
+     * Get stats for a number of days
+     * @NoAdminRequired
      * @NoCSRFRequired
      * @CORS
      */

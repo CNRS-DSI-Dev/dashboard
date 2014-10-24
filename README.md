@@ -46,6 +46,8 @@ If you set `wantHumanReadable` to 1, a `unit` property will be added to the resu
 Warning, as for ownCloud 7.0.2, you **must** set all these parameters ([dataType], [nbDays], [wantHumanreadable]) in urls.
 Like this : `[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/nbUsers/30/0`
 
+Please note that this json api has public access. A restriction mechanism may be added later but is not present for now. In the meantime, .htaccess may be used to restrict access by IP, for instance.
+
 ## Random test datas
 
 A command line utility exists, allowing to populate this app history table with random datas.
@@ -63,6 +65,8 @@ Warning : datas are added to the table, so you may want to truncate the `*prefix
 ## Install
 
 The dashboard app must be put in the owncloud apps directory, with the name "dashboard" (without any number).
+
+Dashboard app can be accessed by anyone. As the app gives informations about your entire owncloud instance, I would advise you to restrict access to choosen groups of users (see app install panel).
 
 The stats will be updated with the next cron run. Stats are timestamped / logged only once a day.
 

@@ -103,7 +103,7 @@ class HistoryService {
         }
 
         foreach($statName as $name) {
-            if ($wantHumanReadable and  in_array($name, $humanReadable)) {
+            if ((boolean)$wantHumanReadable and  in_array($name, $humanReadable)) {
                 if (isset($arrayDatas[$name])) {
                     $hr = $this->humanreadable($arrayDatas[$name]);
                     $history[$name] = $hr['datas'];
