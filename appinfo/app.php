@@ -8,12 +8,20 @@
  * @license This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
 
+namespace OCA\Dashboard;
+
+use \OCA\Dashboard\App\Dashboard;
+
+
+$app = new Dashboard;
+$c = $app->getContainer();
+
 \OCP\App::addNavigationEntry(array(
     'id' => 'dashboard',
     'order' => 10,
     'href' => \OCP\Util::linkToRoute('dashboard.page.index'),
     'icon' => \OCP\Util::imagePath('dashboard', 'dashboard.png'),
-    'name' => \OC_L10N::get('dashboard')->t('Dashboard')
+    'name' => $c->query('L10N')->t('Dashboard')
 ));
 
 // cron task
