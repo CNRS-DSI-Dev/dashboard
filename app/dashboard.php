@@ -52,7 +52,8 @@ class Dashboard extends App {
 
         $container->registerService('StatService', function($c){
             return new StatService(
-                $c->query('UserManager')
+                $c->query('UserManager'),
+                $c->query('RootStorage')
             );
         });
 
@@ -83,6 +84,13 @@ class Dashboard extends App {
         });
 
         /**
+         * Storage Layer
+         */
+        $container->registerService('RootStorage', function($c) {
+            return $c->query('ServerContainer')->getRootFolder();
+        });
+
+        /**
          * Core
          */
         $container->registerService('UserId', function($c) {
@@ -91,7 +99,6 @@ class Dashboard extends App {
 
         $container->registerService('L10N', function($c) {
             return $c->query('ServerContainer')->getL10N($c->query('AppName'));
-            // return \OC_L10N::get($c['AppName']);
         });
 
         $container->registerService('CoreConfig', function($c) {

@@ -13,10 +13,12 @@ namespace OCA\Dashboard\Service;
 class StatService {
 
     protected $userManager;
+    protected $rootStorage;
     protected $datas;
 
-    public function __construct($userManager) {
+    public function __construct($userManager, $rootStorage) {
         $this->userManager = $userManager;
+        $this->rootStorage = $rootStorage;
 
         $this->datas = array();
     }
@@ -60,21 +62,17 @@ class StatService {
         $nbFilesVariance = new Variance;
         $nbSharesVariance = new Variance;
 
-        $dataRoot = $this->getUserDataDir() . '/';
-
         // 'users' is a temporary container, won't be send back
         $stats['users'] = array();
         $users = \OCP\User::getUsers();
         foreach ($users as $uid) {
-            $userRoot = \OC_User::getHome($uid);
-            $userDirectory = str_replace($dataRoot, '', $userRoot) . '/files';
+            $userDirectory = $this->rootStorage . '/' . $uid . '/files';
 
             $stats['users'][$uid] = array();
             $stats['users'][$uid]['nbFiles'] = 0;
             $stats['users'][$uid]['nbFolders'] = 0;
             $stats['users'][$uid]['nbShares'] = 0;
             $stats['users'][$uid]['filesize'] = 0;
-            //$stats['users'][$uid]['quota'] = \OC_Util::getUserQuota($uid);
 
             // extract datas
             $this->getFilesStat($view, $userDirectory, $stats['users'][$uid]);
