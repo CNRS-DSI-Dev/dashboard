@@ -97,8 +97,6 @@ class Populate extends Command {
     }
 
     protected function addHistory($date, $stats) {
-        $DB = \OC_DB::getConnection();
-
         $sql = "INSERT INTO *PREFIX*dashboard_history
             SET date = :date,
                 total_used_space = :totalUsedSpace,
@@ -118,7 +116,8 @@ class Populate extends Command {
                 stdv_folders_per_user = :stdvNbFoldersPerUser,
                 stdv_shares_per_user = :stdvNbSharesPerUser";
 
-        $statement = $DB->executeQuery($sql, array(
+        $stmt = \OCP\DB::prepare($sql);
+        $stmt->execute(array(
             ':date' => $date->format('Y-m-d H:i:s'),
             ':totalUsedSpace' => $stats['totalUsedSpace'],
             ':defaultQuota' => $stats['defaultQuota'],
@@ -140,9 +139,8 @@ class Populate extends Command {
     }
 
     protected function truncate() {
-        $DB = \OC_DB::getConnection();
-
         $sql = "TRUNCATE *PREFIX*dashboard_history";
-        $DB->executeQuery($sql);
+        $stmt = \OCP\DB::prepare($sql);
+        $stmt->execute();
     }
 }
