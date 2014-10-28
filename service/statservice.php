@@ -94,10 +94,12 @@ class StatService
         if (Helper::isDashboardGroupsEnabled()) {
             $statsByGroup = true;
             $statEnabledGroupList = Helper::getDashboardGroupList();
+            $stats['groups'] = array();
         }
 
         // 'users' is a temporary container, won't be send back
         $stats['users'] = array();
+
         foreach ($users as $uid) {
             $userDirectory = $this->rootStorage . '/' . $uid . '/files';
 
@@ -110,21 +112,18 @@ class StatService
             // group stats ?
             $groupList = array();
             if ($statsByGroup) {
-                // $pseudoUser = new PseudoUser($uid);
-                $user = $this->userManager->get($uid);
-$f = fopen('/tmp/truc.log', 'a');
-fputs($f, $uid . "\n" . print_r($user, true) . "\n");
-fclose($f);
+                $userGroups = \OC_Group::getUserGroups($uid);
+                $groupList = array_intersect($userGroups, $statEnabledGroupList);
 
-                // $userGroups = $this->groupManager->getUserGroups($pseudoUser);
-// $f = fopen('/tmp/truc.log', 'a');
-// fputs($f, $uid . "\n" . print_r($userGroups, true) . "\n");
-// fclose($f);
-
-                // $groupList = array_intersect_key($userGroups, $statEnabledGroupList);
-// $f = fopen('/tmp/truc.log', 'a');
-// fputs($f, $uid . "\n" . print_r($groupList, true) . "\n");
-// fclose($f);
+                foreach($groupList as $group) {
+                    if (!isset($stats['groups'][$group])) {
+                        $stats['groups'][$group] = array();
+                        $stats['groups'][$group]['nbFiles'] = 0;
+                        $stats['groups'][$group]['nbFolders'] = 0;
+                        $stats['groups'][$group]['nbShares'] = 0;
+                        $stats['groups'][$group]['filesize'] = 0;
+                    }
+                }
             }
 
             // extract datas

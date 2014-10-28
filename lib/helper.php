@@ -29,13 +29,17 @@ class Helper
      */
     public static function getDashboardGroupList()
     {
-        $appConfig = \OC::$server->getAppConfig();
-        $result = $appConfig->getValue('dashboard', 'dashboard_group_list', '');
+        $groups = array();
 
-        if (!is_array($result)) {
-            $result = array();
+        $appConfig = \OC::$server->getAppConfig();
+        $result = json_decode($appConfig->getValue('dashboard', 'dashboard_group_list', ''));
+
+        if (is_array($result)) {
+            foreach($result as $item) {
+                array_push($groups, $item->id);
+            }
         }
 
-        return json_decode($result);
+        return $groups;
     }
 }
