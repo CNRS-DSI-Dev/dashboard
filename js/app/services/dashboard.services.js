@@ -9,10 +9,10 @@
 angular.module('dashboard.services.stats', [])
     .factory('statsService', ['$http', function($http){
         var doGetStats = function() {
-            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/index'));
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/index.json'));
         }
         var doGetHistoryStats = function(dataType, nbDays) {
-            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/' + dataType + '/' + nbDays + '/1'));
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/json/' + dataType + '/' + nbDays + '/1'));
         }
         return {
             getStats: function() { return doGetStats(); },

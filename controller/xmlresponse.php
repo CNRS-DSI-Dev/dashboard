@@ -95,7 +95,12 @@ class XMLResponse extends \OCP\AppFramework\Http\Response {
                 $this->arrayToXML($value, $subnode);
             }
             else {
-                $xml->addChild("$key", htmlspecialchars("$value"));
+                if (is_numeric($key)) {
+                    $xml->addChild("item$key", htmlspecialchars("$value"));
+                }
+                else {
+                    $xml->addChild("$key", htmlspecialchars("$value"));
+                }
             }
         }
     }

@@ -28,6 +28,10 @@ class APIStatsController extends APIController {
         $this->userId = $userId;
         $this->statService = $statService;
         $this->historyService = $historyService;
+
+        $this->registerResponder('xml', function($datas){
+            return new XMLResponse($datas);
+        });
     }
 
     /**
@@ -61,15 +65,12 @@ class APIStatsController extends APIController {
             }
         }
 
-        $this->registerResponder('xml', function($stats){
-            return new XMLResponse($stats);
-        });
-
-        return new JSONResponse($stats);
+        return $stats;
     }
 
     /**
      * Returns real time informations
+     * @NoAdminRequired
      * @NoCSRFRequired
      * @CORS
      */
@@ -83,11 +84,7 @@ class APIStatsController extends APIController {
             'globalStorageInfo' => $this->statService->getGlobalStorageInfo(),
         );
 
-        $this->registerResponder('xml', function($stats){
-            return new XMLResponse($stats);
-        });
-
-        return new JSONResponse($stats);
+        return $stats;
     }
 
     /**
@@ -124,7 +121,7 @@ class APIStatsController extends APIController {
             return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);
         }
 
-        return new JSONResponse($history);
+        return $history;
     }
 
 }
