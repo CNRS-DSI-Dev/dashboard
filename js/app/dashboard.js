@@ -30,7 +30,7 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'chartService
             $scope.error = true;
         });
 
-    statsService.getHistoryStats('nbUsers', 30)
+    statsService.getHistoryStats('none', 'nbUsers', 30)
         .success(function(data) {
             $scope.dataHistory = chartService.confChart(data, 'nbUsers', '');
         })
@@ -42,7 +42,7 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'chartService
     $scope.$watch(
         'dataType',
         function(value){
-            statsService.getHistoryStats(value, $scope.nbDays.nb)
+            statsService.getHistoryStats('none', value, $scope.nbDays.nb)
                 .success(function(data) {
                     var unit = '';
                     if (data.unit && data.unit[value]) {
@@ -60,7 +60,7 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'chartService
     $scope.$watch(
         'nbDays',
         function(value){
-            statsService.getHistoryStats($scope.dataType, value.nb)
+            statsService.getHistoryStats('none', $scope.dataType, value.nb)
                 .success(function(data) {
                     $scope.dataHistory = chartService.confChart(data, $scope.dataType);
                 })

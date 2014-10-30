@@ -11,12 +11,12 @@ angular.module('dashboard.services.stats', [])
         var doGetStats = function() {
             return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/index.json'));
         }
-        var doGetHistoryStats = function(dataType, nbDays) {
-            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/json/' + dataType + '/' + nbDays + '/1'));
+        var doGetHistoryStats = function(gid, dataType, nbDays) {
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/json/' + gid + '/' + dataType + '/' + nbDays + '/1'));
         }
         return {
             getStats: function() { return doGetStats(); },
-            getHistoryStats: function(dataType, nbDays) { return doGetHistoryStats(dataType, nbDays); },
+            getHistoryStats: function(gid, dataType, nbDays) { return doGetHistoryStats(gid, dataType, nbDays); },
         };
     }]);
 

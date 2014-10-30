@@ -111,7 +111,7 @@ class APIStatsController extends APIController {
      * @NoCSRFRequired
      * @CORS
      */
-    public function historyStats($dataType='all', $range=30, $wanthumanreadable=1) {
+    public function historyStats($dataType='all', $range=30, $wanthumanreadable=1, $gid='none') {
         $history = array();
 
         try {

@@ -34,8 +34,8 @@ $application->registerRoutes($this, array(
         ),
         array(
             'name' => 'api_stats#history_stats',
-            'url' => '/api/1.0/history_stats/{format}/{dataType}/{range}/{wanthumanreadable}',
-            'defaults' => array('format' => 'json', 'dataType' => 'all', 'range' => 30, 'wanthumanreadable' => 1),
+            'url' => '/api/1.0/history_stats/{format}/{gid}/{dataType}/{range}/{wanthumanreadable}',
+            'defaults' => array('format' => 'json', 'gid' => 'none', 'dataType' => 'all', 'range' => 30, 'wanthumanreadable' => 1),
             'verb' => 'GET',
         ),
         array(

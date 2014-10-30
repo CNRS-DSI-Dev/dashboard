@@ -18,10 +18,21 @@ use \OCP\AppFramework\Http\Response;
 class XMLResponse extends \OCP\AppFramework\Http\Response {
 
     /**
-     * response data
+     * Default root tag name
+     */
+    const defaultRootTagName = 'root';
+
+    /**
+     * Response datas
      * @var array|object
      */
     protected $data;
+
+    /**
+     * XML root tag name
+     * @var string
+     */
+    protected $rootTagName;
 
 
     /**
@@ -29,10 +40,27 @@ class XMLResponse extends \OCP\AppFramework\Http\Response {
      * @param array|object $data the object or array that should be transformed
      * @param int $statusCode the Http status code, defaults to 200
      */
-    public function __construct($data=array(), $statusCode=\OCP\AppFramework\Http::STATUS_OK) {
+    public function __construct($data=array(), $statusCode=\OCP\AppFramework\Http::STATUS_OK, $rootTagName=self::defaultRootTagName) {
         $this->data = $data;
         $this->setStatus($statusCode);
+
+        // TODO : this does not work... have to investigate that, later :/
+        // Ref setRootTagName and xml_encode
+        $this->rootTagName = $this->setRootTagName($rootTagName);
+
         $this->addHeader('Content-type', 'application/xml; charset=utf-8');
+    }
+
+    /**
+     * Setter for rootTagName
+     */
+    protected function setRootTagName($rootTagName) {
+        if ($this->isValidTagName($rootTagName)) {
+            $this->rootTagName = $rootTagName;
+        }
+        else {
+            $this->rootTagName = self::defaultRootTagName;
+        }
     }
 
 
@@ -72,7 +100,14 @@ class XMLResponse extends \OCP\AppFramework\Http\Response {
      */
     protected function xml_encode($data) {
         $orig = array($data);
-        $xml = new \SimpleXMLElement("<?xml version =\"1.0\"?><stats></stats>");
+
+        // TODO, ref : setRootTagName and __construct
+        // $beginningTag = "<" . $this->rootTagName . ">";
+        // $endingTag = "</" . $this->rootTagName . ">";
+
+        /* $xml = new \SimpleXMLElement("<?xml version =\"1.0\"?>" . $beginningTag . $endingTag); */
+
+        $xml = new \SimpleXMLElement("<?xml version =\"1.0\"?><root></root>");
         $this->arrayToXML($orig, $xml);
 
         return $xml->asXML();
@@ -103,6 +138,14 @@ class XMLResponse extends \OCP\AppFramework\Http\Response {
                 }
             }
         }
+    }
+
+    /**
+     * Some verifications on tag names
+     */
+    protected function isValidTagName($tag){
+        $pattern = '/^[a-z_]+[a-z0-9\:\-\.\_]*[^:]*$/i';
+        return preg_match($pattern, $tag, $matches) && $matches[0] == $tag;
     }
 
 }

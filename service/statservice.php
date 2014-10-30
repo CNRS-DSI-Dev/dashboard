@@ -118,11 +118,13 @@ class StatService
                 foreach($groupList as $group) {
                     if (!isset($stats['groups'][$group])) {
                         $stats['groups'][$group] = array();
+                        $stats['groups'][$group]['nbUsers'] = 0;
                         $stats['groups'][$group]['nbFiles'] = 0;
                         $stats['groups'][$group]['nbFolders'] = 0;
                         $stats['groups'][$group]['nbShares'] = 0;
                         $stats['groups'][$group]['filesize'] = 0;
                     }
+                    $stats['groups'][$group]['nbUsers']++;
                 }
             }
 
@@ -142,6 +144,17 @@ class StatService
             $nbFoldersVariance->addValue($stats['users'][$uid]['nbFolders']);
             $nbFilesVariance->addValue($stats['users'][$uid]['nbFiles']);
             $nbSharesVariance->addValue($stats['users'][$uid]['nbShares']);
+
+            // groups stats
+            if ($statsByGroup) {
+                foreach($groupList as $group) {
+                    $stats['groups'][$group]['nbFiles'] += $stats['users'][$uid]['nbFiles'];
+                    $stats['groups'][$group]['nbFolders'] += $stats['users'][$uid]['nbFolders'];
+                    $stats['groups'][$group]['nbShares'] += $stats['users'][$uid]['nbShares'];
+                    $stats['groups'][$group]['filesize'] += $stats['users'][$uid]['filesize'];
+
+                }
+            }
         }
 
         // some basic stats
@@ -152,7 +165,19 @@ class StatService
         $stats['sizePerUser'] = $stats['totalSize'] / $this->countUsers();
         $stats['sizePerFile'] = $stats['totalSize'] / $stats['totalFiles'];
         $stats['sizePerFolder'] = $stats['totalSize'] / $stats['totalFolders'];
-        $stats['sharesPerUser'] = $stats['totalShares'] / $this->countUsers();
+
+        // by groups
+        if ($statsByGroup) {
+            foreach(array_keys($stats['groups']) as $group) {
+                $stats['groups'][$group]['filesPerUser'] = $stats['groups'][$group]['nbFiles'] / $stats['groups'][$group]['nbUsers'];
+                $stats['groups'][$group]['filesPerFolder'] = $stats['groups'][$group]['nbFiles'] / $stats['groups'][$group]['nbFolders'];
+                $stats['groups'][$group]['foldersPerUser'] = $stats['groups'][$group]['nbFolders'] / $stats['groups'][$group]['nbUsers'];
+                $stats['groups'][$group]['sharesPerUser'] = $stats['groups'][$group]['nbShares'] / $stats['groups'][$group]['nbUsers'];
+                $stats['groups'][$group]['sizePerUser'] = $stats['groups'][$group]['filesize'] / $stats['groups'][$group]['nbUsers'];
+                $stats['groups'][$group]['sizePerFile'] = $stats['groups'][$group]['filesize'] / $stats['groups'][$group]['nbFiles'];
+                $stats['groups'][$group]['sizePerFolder'] = $stats['groups'][$group]['filesize'] / $stats['groups'][$group]['nbFolders'];
+            }
+        }
 
         // variance
         //$stats['meanNbFilesPerUser'] = $nbFilesVariance->getMean();
