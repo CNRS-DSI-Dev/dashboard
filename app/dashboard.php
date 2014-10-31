@@ -19,6 +19,7 @@ use \OCA\Dashboard\Service\HistoryService;
 use \OCA\Dashboard\Service\StatsTaskService;
 use \OCA\Dashboard\Service\GroupsService;
 use \OCA\Dashboard\Db\HistoryMapper;
+use \OCA\Dashboard\Db\HistoryByGroupMapper;
 
 class Dashboard extends App {
 
@@ -82,7 +83,8 @@ class Dashboard extends App {
         $container->registerService('StatsTaskService', function($c) {
             return new StatsTaskService(
                 $c->query('StatService'),
-                $c->query('HistoryMapper')
+                $c->query('HistoryMapper'),
+                $c->query('HistoryByGroupMapper')
             );
         });
 
@@ -105,6 +107,11 @@ class Dashboard extends App {
          */
         $container->registerService('HistoryMapper', function($c) {
             return new HistoryMapper(
+                $c->query('ServerContainer')->getDb()
+            );
+        });
+        $container->registerService('HistoryByGroupMapper', function($c) {
+            return new HistoryByGroupMapper(
                 $c->query('ServerContainer')->getDb()
             );
         });

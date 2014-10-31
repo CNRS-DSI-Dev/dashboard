@@ -113,6 +113,11 @@
                 <autoincrement>1</autoincrement>
             </field>
             <field>
+                <name>gid</name>
+                <type>text</type>
+                <notnull>true</notnull>
+            </field>
+            <field>
                 <name>date</name>
                 <type>timestamp</type>
                 <notnull>true</notnull>
@@ -177,6 +182,13 @@
                 <type>float</type>
                 <notnull>true</notnull>
             </field>
+
+            <index>
+                <name>gid_index</name>
+                <field>
+                    <name>gid</name>
+                </field>
+            </index>
         </declaration>
     </table>
 </database>

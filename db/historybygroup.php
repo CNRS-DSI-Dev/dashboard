@@ -13,6 +13,7 @@ namespace OCA\Dashboard\Db;
 use \OCP\AppFramework\Db\Entity;
 
 class HistoryByGroup extends Entity {
+    protected $gid;
     protected $date;
     protected $totalUsedSpace;
     protected $nbUsers;

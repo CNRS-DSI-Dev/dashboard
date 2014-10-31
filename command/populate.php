@@ -27,7 +27,7 @@ class Populate extends Command {
 
         $this
             ->setName('dashboard:populate')
-            ->setDescription('Populate ' . $prefix . 'dashboard_history table with random test datas')
+            ->setDescription('Populate ' . $prefix . 'dashboard_history and ' . $prefix . 'dashboard_history_by_group (if needed) tables with random test datas')
             ->addArgument('nb', InputArgument::OPTIONAL, 'Number of days you want stats for.', DEFAULT_NB)
             ->addOption('truncate', 't', InputOption::VALUE_NONE, 'Delete all history datas before generating new ones.');
         ;
@@ -56,6 +56,13 @@ class Populate extends Command {
         $stats['stdvNbFoldersPerUser'] = $stats['nbFolders'];
         $stats['stdvNbSharesPerUser'] = $stats['nbShares'];
 
+        $groupsEnabled = true;
+        $groupsEnabledKey = \OCP\Config::getAppValue('dashboard', 'dashboard_groups_enabled', 'yes');
+        if ($groupsEnabledKey !== 'yes') {
+            $groupsEnabled = false;
+        }
+        $output->writeln("groupsEnabledKey : " . var_dump($groupsEnabledKey));
+
         for($i=0 ; $i < $nb; $i++) {
             $date->add(new \DateInterval('P1D'));
             $output->writeln('<info>' . 'Adding stats for date ' . $date->format('Y-m-d H:i:s') . '</info>');
@@ -81,11 +88,41 @@ class Populate extends Command {
             $stats['stdvNbSharesPerUser'] = rand(1, 3);
 
             $this->addHistory($date, $stats);
+
+            if ($groupsEnabled) {
+                $nbGroups = round ($stats['nbUsers'] / 2) ;
+
+                for ($gkey = 1 ; $gkey <= $nbGroups ; $gkey++) {
+                    $groupName = 'group_' . $gkey;
+
+                    $groupStats['nbUsers'] = round($stats['nbUsers'] / 3);
+                    $groupStats['nbFiles'] = round($stats['nbFiles'] / 3);
+                    $groupStats['nbFolders'] = round($stats['nbFolders'] / 3);
+                    $groupStats['nbShares'] = round($stats['nbShares'] / 3);
+                    $groupStats['filesize'] = round($stats['totalUsedSpace'] / 3);
+
+                    $groupStats['filesPerUser'] = $groupStats['nbFiles'] / $groupStats['nbUsers'];
+                    $groupStats['filesPerFolder'] = $groupStats['nbFiles'] / $groupStats['nbFolders'];
+                    $groupStats['foldersPerUser'] = $groupStats['nbFolders'] / $groupStats['nbUsers'];
+                    $groupStats['sharesPerUser'] = $groupStats['nbShares'] / $groupStats['nbUsers'];
+                    $groupStats['sizePerUser'] = $groupStats['filesize'] / $groupStats['nbUsers'];
+                    $groupStats['sizePerFile'] = $groupStats['filesize'] / $groupStats['nbFiles'];
+                    $groupStats['sizePerFolder'] = $groupStats['filesize'] / $groupStats['nbFolders'];
+                }
+
+                $this->addHistoryByGroup($date, $groupName, $groupStats);
+            }
         }
 
         $output->writeln('Done');
     }
 
+    /**
+     * Avoid negative values in stats
+     * @param int|float $stat Original value
+     * @param int|float $value Increment
+     * @return int|float Positive value
+     */
     protected function addValue($stat, $value) {
         $stat += $value;
 
@@ -96,6 +133,11 @@ class Populate extends Command {
         return $stat;
     }
 
+    /**
+     * DB Insert for global stats
+     * @param \DateTime $date Insert date
+     * @param array $stats Global stats
+     */
     protected function addHistory($date, $stats) {
         $sql = "INSERT INTO *PREFIX*dashboard_history
             SET date = :date,
@@ -138,8 +180,55 @@ class Populate extends Command {
         ));
     }
 
+    /**
+     * DB Insert for group stats
+     * @param \DateTime $date Insert date
+     * @param string $groupName Group id
+     * @param array $groupStats Group's stats
+     */
+    protected function addHistoryByGroup($date, $groupName, $groupStats) {
+        $sql = "INSERT INTO *PREFIX*dashboard_history_by_group
+            SET date = :date,
+                gid = :groupId,
+                total_used_space = :totalUsedSpace,
+                nb_users = :nbUsers,
+                nb_folders = :nbFolders,
+                nb_files = :nbFiles,
+                nb_shares = :nbShares,
+                size_per_user = :sizePerUser,
+                folders_per_user = :foldersPerUser,
+                files_per_user = :filesPerUser,
+                shares_per_user = :sharesPerUser,
+                size_per_folder = :sizePerFolder,
+                files_per_folder = :filesPerFolder,
+                size_per_file = :sizePerFile";
+
+
+        $stmt = \OCP\DB::prepare($sql);
+        $stmt->execute(array(
+            ':date' => $date->format('Y-m-d H:i:s'),
+            ':groupId' => $groupName,
+            ':totalUsedSpace' => $groupStats['filesize'],
+            ':nbUsers' => $groupStats['nbUsers'],
+            ':nbFolders' => $groupStats['nbFolders'],
+            ':nbFiles' => $groupStats['nbFiles'],
+            ':nbShares' => $groupStats['nbShares'],
+            ':sizePerUser' => $groupStats['sizePerUser'],
+            ':foldersPerUser' =>$groupStats['foldersPerUser'],
+            ':filesPerUser' => $groupStats['filesPerUser'],
+            ':sharesPerUser' => $groupStats['sharesPerUser'],
+            ':sizePerFolder' => $groupStats['sizePerFolder'],
+            ':filesPerFolder' => $groupStats['filesPerFolder'],
+            ':sizePerFile' => $groupStats['sizePerFile'],
+        ));
+    }
+
     protected function truncate() {
         $sql = "TRUNCATE *PREFIX*dashboard_history";
+        $stmt = \OCP\DB::prepare($sql);
+        $stmt->execute();
+
+        $sql = "TRUNCATE *PREFIX*dashboard_history_by_group";
         $stmt = \OCP\DB::prepare($sql);
         $stmt->execute();
     }

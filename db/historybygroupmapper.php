@@ -19,7 +19,7 @@ class HistoryByGroupMapper extends Mapper {
     }
 
     public function findAll($limit=null, $offset=null) {
-        $sql = "SELECT * FROM *PREFIX*dashboard_history";
+        $sql = "SELECT * FROM *PREFIX*dashboard_history_by_group";
         return $this->findEntities($sql, $limit, $offset);
     }
 
