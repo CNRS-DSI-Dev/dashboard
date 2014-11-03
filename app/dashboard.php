@@ -76,7 +76,8 @@ class Dashboard extends App {
 
         $container->registerService('HistoryService', function($c){
             return new HistoryService(
-                $c->query('HistoryMapper')
+                $c->query('HistoryMapper'),
+                $c->query('HistoryByGroupMapper')
             );
         });
 
@@ -90,7 +91,7 @@ class Dashboard extends App {
 
         $container->registerService('GroupsService', function($c){
             return new GroupsService(
-                $c->query('UserManager')
+                $c->query('HistoryByGroupMapper')
             );
         });
 

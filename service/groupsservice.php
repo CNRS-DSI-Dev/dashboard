@@ -13,11 +13,11 @@ namespace OCA\dashboard\Service;
 class GroupsService
 {
 
-    protected $userManager;
+    protected $historyByGroupMapper;
 
-    public function __construct()
+    public function __construct(\OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper)
     {
-        $this->userManager = $userManager;
+        $this->historyByGroupMapper = $historyByGroupMapper;
     }
 
     /**
@@ -51,6 +51,32 @@ class GroupsService
         $result = $appConfig->getValue('dashboard', 'dashboard_groups_enabled', 'no');
 
         return $result;
+    }
+
+    /**
+     * Returns the list of stat's enabled groups
+     * @param int $range Number of days from today you want to get the groups
+     * @return array
+     */
+    public function statsEnabledGroups($range = 30)
+    {
+        // naive approach...
+        // $appConfig = \OC::$server->getAppConfig();
+        // $result = $appConfig->getValue('dashboard', 'dashboard_group_list', '');
+        // return $result;
+
+        // as admin may change the enabled groups list, it's probably better to get real group list instead of appconfig group list
+        // Searched in history (for given range) which gid are presents
+        $groups = array();
+
+        $datetime = new \DateTime();
+        $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
+        $datetime->setTime(23, 59, 59);
+        $groups = $this->historyByGroupMapper->findAllGidFrom($datetime);
+$f = fopen('/tmp/truc.log', 'a');
+fputs($f, print_r($groups, true) . "\n");
+fclose($f);
+        return $groups;
     }
 
 }

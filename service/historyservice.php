@@ -10,23 +10,27 @@
 
 namespace OCA\Dashboard\Service;
 
+use OCA\Dashboard\Lib\Helper;
+
 class HistoryService {
 
     protected $historyMapper;
 
-    public function __construct(\OCA\Dashboard\Db\HistoryMapper $historyMapper) {
+    public function __construct(\OCA\Dashboard\Db\HistoryMapper $historyMapper, \OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper) {
         $this->historyMapper = $historyMapper;
+        $this->historyByGroupMapper = $historyByGroupMapper;
     }
 
     /**
      * Returns datas from history
+     * @param string $gid Group id, if you want stats for only one group (this group MUST be conf-ed in admin page)
      * @param string $dataType The type of data you want, 'all' (default) if you want all datas.
      * @param integer $range Number of days from today you want to get the datas
      * @param integer $wanHumanReadable If you want to show humanreable values (1) or not (0)
      * @throws OCA\Dashboard\Service\HistoryStatsUnknownDatatypeException
      * @throws OCA\Dashboard\Service\HistoryStatsInvalidRangeException
      */
-    public function getHistoryStats($dataType='all', $range=30, $wantHumanReadable = 1) {
+    public function getHistoryStats($gid='none', $dataType='all', $range=30, $wantHumanReadable = 1) {
         $statName = array(
             'date',
             'defaultQuota',
@@ -53,7 +57,16 @@ class HistoryService {
             'sizePerFile',
         );
 
+        $statsByGroup = false;
+        // stat enabled groups list
+        if ($gid !== 'none' and Helper::isDashboardGroupsEnabled()) {
+            $statsByGroup = true;
+            $statEnabledGroupList = Helper::getDashboardGroupList();
+            // TODO: THROWS EXCEPTION IF ASKED GID NOT IN LIST (CREATE EXCEPTION CLASS)
+        }
+
         if ($dataType !== 'all') {
+            // TODO: MANAGE DATATYPE LIST FOR STATS BY GROUP (NO STANDARD VARIATION)
             if (!in_array($dataType, $statName)) {
                 throw new HistoryStatsUnknownDatatypeException();
 
@@ -80,7 +93,12 @@ class HistoryService {
         $datetime = new \DateTime();
         $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
         $datetime->setTime(23, 59, 59);
-        $datas = $this->historyMapper->findAllFrom($datetime, $dataType);
+        if ($statsByGroup) {
+            $datas = $this->historyByGroupMapper->findAllFrom($gid, $datetime, $dataType);
+        }
+        else {
+            $datas = $this->historyMapper->findAllFrom($datetime, $dataType);
+        }
 
         // create a array struct
         foreach($datas as $data) {

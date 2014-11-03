@@ -66,7 +66,13 @@ angular.module('dashboard.services.groups', [])
         var doIsGroupsEnabled = function() {
             return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/is_groups_enabled'));
         }
+
+        var doGetStatsEnabledGroups = function() {
+            return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/stats_enabled_groups'));
+        }
+
         return {
             isGroupsEnabled: function() { return doIsGroupsEnabled(); },
+            getStatsEnabledGroups: function() { return doGetStatsEnabledGroups(); },
         };
     }]);

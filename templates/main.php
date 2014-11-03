@@ -64,6 +64,9 @@
     <div>
         <select ng-model="dataType" ng-options="type for type in dataTypes"></select>
         <select ng-model="nbDays" ng-options="choices as choices.label for choices in nbDaysChoices"></select>
+        <select ng-model="groupId" ng-options="groups as groups.id for groups in groupList">
+            <option value="all">All</option>
+        </select>
     </div>
     <chart value="dataHistory" type="Line" width="800" height="300"></chart>
 </div>

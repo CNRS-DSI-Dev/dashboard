@@ -6,10 +6,14 @@
  * @license This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
 
-var dashboard = angular.module('dashboard', ['dashboard.services.stats', 'dashboard.services.chart', 'dashboard.filters', 'chartjs-directive']);
+var dashboard = angular.module('dashboard', ['dashboard.services.stats', 'dashboard.services.chart', 'dashboard.services.groups', 'dashboard.filters', 'chartjs-directive']);
 
+dashboard.config(['$httpProvider', function($httpProvider) {
+    // CSRF protection
+    $httpProvider.defaults.headers.common.requesttoken = oc_requesttoken;
+}]);
 
-dashboard.controller('statsController', ['$scope', 'statsService', 'chartService', function($scope, statsService, chartService) {
+dashboard.controller('statsController', ['$scope', 'statsService', 'groupsService', 'chartService', function($scope, statsService, groupsService, chartService) {
     $scope.dataTypes = ['totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares', 'sizePerUser', 'foldersPerUser', 'filesPerUser', 'sharesPerUser', 'sizePerFolder', 'filesPerFolder', 'sizePerFile', 'stdvFilesPerUser', 'stdvFoldersPerUser', 'stdvSharesPerUser'];
     $scope.dataType = 'nbUsers';
 
@@ -21,28 +25,83 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'chartService
     ]
     $scope.nbDays = $scope.nbDaysChoices[1];
 
-    statsService.getStats()
-        .success(function(data) {
-            $scope.stats = data;
-        })
-        .error(function(data) {
-            console.log('Error: ' + data);
-            $scope.error = true;
-        });
+    $scope.dashboardGroupsEnabled = false;
+    $scope.groupList = [];
 
-    statsService.getHistoryStats('none', 'nbUsers', 30)
-        .success(function(data) {
-            $scope.dataHistory = chartService.confChart(data, 'nbUsers', '');
-        })
-        .error(function(data) {
-            console.log('Error: ' + data);
-            $scope.error = true;
-        });
+    /**
+     * Initialisation
+     */
+    $scope.init = function() {
+        statsService.getStats()
+            .success(function(data) {
+                $scope.stats = data;
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+                $scope.error = true;
+            });
+
+        statsService.getHistoryStats('none', 'nbUsers', 30)
+            .success(function(data) {
+                $scope.dataHistory = chartService.confChart(data, 'nbUsers', '');
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+                $scope.error = true;
+            });
+
+        groupsService.isGroupsEnabled()
+            .success(function(data) {
+                $scope.dashboardGroupsEnabled = false;
+                if (data.enabled == 'yes') {
+                    $scope.dashboardGroupsEnabled = true;
+                }
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+                $scope.error = true;
+            });
+
+        groupsService.getStatsEnabledGroups()
+            .success(function(data) {
+                console.log(data);
+                if (data == null || data == undefined) {
+                    $scope.groupList = [];
+                }
+                else {
+                    $scope.groupList = JSON.parse(data.groups);
+                    console.log($scope.groupList);
+                }
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+                $scope.error = true;
+            });
+    }
+    $scope.init();
+
+    $scope.$watch(
+        'groupId',
+        function(value){
+            statsService.getHistoryStats(value.id, $scope.dataType, $scope.nbDays.nb)
+                .success(function(data) {
+                    var unit = '';
+                    if (data.unit && data.unit[$scope.dataType]) {
+                        unit = data.unit[$scope.dataType];
+                    }
+                    $scope.dataHistory = chartService.confChart(data, $scope.dataType, unit);
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                    $scope.error = true;
+                });
+        }
+    );
 
     $scope.$watch(
         'dataType',
         function(value){
-            statsService.getHistoryStats('none', value, $scope.nbDays.nb)
+            statsService.getHistoryStats($scope.groupId.id, value, $scope.nbDays.nb)
                 .success(function(data) {
                     var unit = '';
                     if (data.unit && data.unit[value]) {
@@ -60,9 +119,13 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'chartService
     $scope.$watch(
         'nbDays',
         function(value){
-            statsService.getHistoryStats('none', $scope.dataType, value.nb)
+            statsService.getHistoryStats($scope.groupId.id, $scope.dataType, value.nb)
                 .success(function(data) {
-                    $scope.dataHistory = chartService.confChart(data, $scope.dataType);
+                    var unit = '';
+                    if (data.unit && data.unit[$scope.dataType]) {
+                        unit = data.unit[$scope.dataType];
+                    }
+                    $scope.dataHistory = chartService.confChart(data, $scope.dataType, unit);
                 })
                 .error(function(data) {
                     console.log('Error: ' + data);

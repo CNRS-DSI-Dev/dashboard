@@ -15,11 +15,13 @@ use \OCA\Dashboard\App\Dashboard;
 $application = new Dashboard();
 $application->registerRoutes($this, array(
     'routes' => array(
+        // WEB PAGE
         array(
             'name' => 'page#index',
             'url' => '/',
             'verb' => 'GET',
         ),
+        // STATS API
         array(
             'name' => 'api_stats#stats',
             'url' => '/api/1.0/stats.{format}',
@@ -38,12 +40,7 @@ $application->registerRoutes($this, array(
             'defaults' => array('format' => 'json', 'gid' => 'none', 'dataType' => 'all', 'range' => 30, 'wanthumanreadable' => 1),
             'verb' => 'GET',
         ),
-        array(
-            'name' => 'api_stats#preflighted_cors',
-            'url' => '/api/1.0/stats/{path}',
-            'verb' => 'OPTIONS',
-            'requirements' => array('path' => '.+'),
-        ),
+        // GROUPS API
         array(
             'name' => 'api_groups#is_groups_enabled',
             'url' => '/api/1.0/is_groups_enabled',
@@ -54,6 +51,18 @@ $application->registerRoutes($this, array(
             'url' => '/api/1.0/groups/{search}',
             'default' => array('search' => ''),
             'verb' => 'GET',
+        ),
+        array(
+            'name' => 'api_groups#stats_enabled_groups',
+            'url' => '/api/1.0/stats_enabled_groups',
+            'verb' => 'GET',
+        ),
+        // CORS
+        array(
+            'name' => 'api_stats#preflighted_cors',
+            'url' => '/api/1.0/stats/{path}',
+            'verb' => 'OPTIONS',
+            'requirements' => array('path' => '.+'),
         ),
     ),
 ));

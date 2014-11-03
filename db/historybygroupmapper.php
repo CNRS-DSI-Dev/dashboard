@@ -30,10 +30,18 @@ class HistoryByGroupMapper extends Mapper {
         ));
     }
 
-    public function findAllFrom($datetime) {
-        $sql = "SELECT * FROM *PREFIX*dashboard_history_by_group WHERE date > ? ORDER BY date";
+    public function findAllGidFrom($datetime) {
+        $sql = "SELECT distinct(gid) FROM *PREFIX*dashboard_history_by_group WHERE date > ? ORDER BY gid";
         return $this->findEntities($sql, array(
             $datetime->format('Y-m-d H:i:s'),
+        ));
+    }
+
+    public function findAllFrom($gid, $datetime) {
+        $sql = "SELECT * FROM *PREFIX*dashboard_history_by_group WHERE date > ? AND gid = ? ORDER BY date";
+        return $this->findEntities($sql, array(
+            $datetime->format('Y-m-d H:i:s'),
+            $gid,
         ));
     }
 }

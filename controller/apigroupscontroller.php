@@ -34,12 +34,12 @@ class APIGroupsController extends APIController
 
     /**
      * Verify if group stats are enabled (see general settings screen, "Dashboard" section)
+     * @NoAdminRequired
+     * @NoCSRFRequired
      * @return boolean
      */
     public function isGroupsEnabled()
     {
-        \OC_JSON::checkAdminUser();
-
         $enabled = 'no';
 
         try {
@@ -73,6 +73,33 @@ class APIGroupsController extends APIController
         }
 
         return new JSONResponse($groups);
+    }
+
+    /**
+     * Returns list of stat's enabled groups
+     * @NoAdminRequired
+     * @NoCSRFRequired
+     * @param int $range Number of days from today you want to get the groups
+     * @return array
+     */
+    public function statsEnabledGroups($range=30)
+    {
+        // TODO: THROW EXCEPTION IF RANGE UNAVAILABLE (REF HISTORYSTATS_INVALID_RANGE_EXCEPTION)
+
+        $groups = array();
+
+        try {
+            $datas = $this->groupsService->statsEnabledGroups($range);
+
+            $groups = array_map(function($element){return array('id' => $element->getGid());}, $datas);
+        } catch (Exception $e) {
+            $response = new JSONResponse();
+            return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
+        }
+
+        return new JSONResponse(array(
+            'groups' => $groups,
+        ));
     }
 
 }
