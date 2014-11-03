@@ -95,11 +95,11 @@ class Populate extends Command {
                 for ($gkey = 1 ; $gkey <= $nbGroups ; $gkey++) {
                     $groupName = 'group_' . $gkey;
 
-                    $groupStats['nbUsers'] = round($stats['nbUsers'] / 3);
-                    $groupStats['nbFiles'] = round($stats['nbFiles'] / 3);
-                    $groupStats['nbFolders'] = round($stats['nbFolders'] / 3);
-                    $groupStats['nbShares'] = round($stats['nbShares'] / 3);
-                    $groupStats['filesize'] = round($stats['totalUsedSpace'] / 3);
+                    $groupStats['nbUsers'] = rand(1, round($stats['nbUsers'] / 2));
+                    $groupStats['nbFiles'] = rand(1, round($stats['nbFiles'] / 2));
+                    $groupStats['nbFolders'] = rand(1, round($stats['nbFolders'] / 2));
+                    $groupStats['nbShares'] = rand(1, round($stats['nbShares'] / 2));
+                    $groupStats['filesize'] = rand(1, round($stats['totalUsedSpace'] / 2));
 
                     $groupStats['filesPerUser'] = $groupStats['nbFiles'] / $groupStats['nbUsers'];
                     $groupStats['filesPerFolder'] = $groupStats['nbFiles'] / $groupStats['nbFolders'];
@@ -108,9 +108,9 @@ class Populate extends Command {
                     $groupStats['sizePerUser'] = $groupStats['filesize'] / $groupStats['nbUsers'];
                     $groupStats['sizePerFile'] = $groupStats['filesize'] / $groupStats['nbFiles'];
                     $groupStats['sizePerFolder'] = $groupStats['filesize'] / $groupStats['nbFolders'];
-                }
 
-                $this->addHistoryByGroup($date, $groupName, $groupStats);
+                    $this->addHistoryByGroup($date, $groupName, $groupStats);
+                }
             }
         }
 
