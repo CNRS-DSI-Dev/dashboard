@@ -61,7 +61,7 @@ class Populate extends Command {
         if ($groupsEnabledKey !== 'yes') {
             $groupsEnabled = false;
         }
-        $output->writeln("groupsEnabledKey : " . var_dump($groupsEnabledKey));
+        $output->writeln("groupsEnabledKey : " . $groupsEnabledKey);
 
         for($i=0 ; $i < $nb; $i++) {
             $date->add(new \DateInterval('P1D'));
