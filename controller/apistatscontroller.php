@@ -49,7 +49,7 @@ class APIStatsController extends APIController {
         );
 
         try {
-            $history = $this->historyService->getHistoryStats('all', 1, 0);
+            $history = $this->historyService->getHistoryStats('none', 'all', 1, 0);
         } catch (Exception $e) {
             $response = new JSONResponse();
             return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);
@@ -111,11 +111,11 @@ class APIStatsController extends APIController {
      * @NoCSRFRequired
      * @CORS
      */
-    public function historyStats($dataType='all', $range=30, $wanthumanreadable=1) {
+    public function historyStats($gid='none', $dataType='all', $range=30, $wanthumanreadable=1) {
         $history = array();
 
         try {
-            $history = $this->historyService->getHistoryStats($dataType, $range, $wanthumanreadable);
+            $history = $this->historyService->getHistoryStats($gid, $dataType, $range, $wanthumanreadable);
         } catch (Exception $e) {
             $response = new JSONResponse();
             return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);

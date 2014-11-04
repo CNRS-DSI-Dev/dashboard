@@ -1,0 +1,64 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+display: none !important;
+}
+
+.section {
+    clear: both;
+}
+
+#dashboard #groups {
+    width: 15em;
+    float: left;
+}
+
+#dashboard .angucomplete-dropdown {
+    overflow-y: auto;
+    max-height: 130px;
+    border: 1px solid #ddd;
+    border-top: none;
+    padding: 5px;
+    margin-bottom: 1em;
+}
+
+#dashboard .angucomplete-row {
+    margin-bottom: 5px;
+}
+
+#dashboard .angucomplete-row:hover {
+    background-color: #ccc;
+}
+
+#dashboard.section #searchGroup .angucomplete-row .angucomplete-title {
+    font-size: 13px;
+}
+
+#dashboard #groups_value {
+    width: 15em;
+}
+
+#dashboard #groupList {
+    margin-left: 18em;
+    border: 1px solid #ddd;
+    padding: 3px;
+    border-radius: 3px;
+    margin: 3px 3px 3px 18em;
+    font-size: 13px;
+}
+
+#dashboard .groupItem {
+    padding: 1px 5px;
+    margin: 0 3px;
+    border: 1px solid #ddd;
+}
+
+#dashboard .groupItem span {
+    cursor: pointer;
+}
+
+/*div#dashboard.section div#dashboardGroups.indent h3 div#groupList.groupList_saved*/
+#dashboard #groupList.groupList_changed {
+  background: lightYellow;
+}
+#dashboard #groupList.groupList_saved {
+  background: lightGreen;
+}
