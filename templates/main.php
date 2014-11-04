@@ -28,15 +28,15 @@
 
 <div id="space" class="dataBlock">
     <p class="header"><?php p($l->t('Disk space')); ?> <span>{{ stats.history.totalUsedSpace | humanFileSize }}</span></p>
-    <p><?php p($l->t('User data dir')); ?>: {{ stats.userDataDir }} </p>
-    <p><?php p($l->t('Default quota per user')); ?>: {{ stats.history.defaultQuota | humanFileSize }}</p>
+    <p><?php p($l->t('User data dir')); ?>: <span>{{ stats.userDataDir }}</span> </p>
+    <p><?php p($l->t('Default quota per user')); ?>: <span>{{ stats.history.defaultQuota | humanFileSize }}</span></p>
 </div>
 
 <div id="users" class="dataBlock">
     <p class="header"><?php p($l->t('Users')); ?> <span>{{ stats.history.nbUsers }}</span></p>
     <p><?php p($l->t('Size / user')); ?>: <span>{{ stats.history.sizePerUser | humanFileSize }}</span></p>
     <p><?php p($l->t('Files / user')); ?>: <span>{{ stats.history.filesPerUser | number:2 }} (<?php p($l->t('standard deviation')); ?>: {{ stats.history.stdvFilesPerUser | number:2 }})</span></p>
-    <p><?php p($l->t('Folders / user')); ?>: {{ stats.history.foldersPerUser | number:2 }} (<?php p($l->t('standard deviation')); ?>: {{ stats.history.stdvFoldersPerUser | number:2 }})</span></p>
+    <p><?php p($l->t('Folders / user')); ?>: <span>{{ stats.history.foldersPerUser | number:2 }} (<?php p($l->t('standard deviation')); ?>: {{ stats.history.stdvFoldersPerUser | number:2 }})</span></p>
 </div>
 
 <div id="folders" class="dataBlock">
@@ -56,19 +56,17 @@
 <div id="shares" class="dataBlock">
     <p class="header"><?php p($l->t('Shares')); ?> <span>{{ stats.history.nbShares }}</span></p>
     <p><?php p($l->t('Shares / user')); ?>: <span>{{ stats.history.sharesPerUser | number:2 }}</span></p>
-    <p><?php p($l->t('Standard deviation')); ?>: {{ stats.history.stdvFilesPerUser | number:2 }}</p>
+    <p><?php p($l->t('Standard deviation')); ?>: <span>{{ stats.history.stdvFilesPerUser | number:2 }}</span></p>
     <br>
 </div>
 
 <div class="history">
     <div>
-        <select ng-model="dataType" ng-options="type for type in dataTypes"></select>
-        <select ng-model="nbDays" ng-options="choices as choices.label for choices in nbDaysChoices"></select>
-        <select ng-model="groupId" ng-options="groups as groups.id for groups in groupList">
-            <option value="all">All</option>
-        </select>
+        <select ng-model="dataType" ng-options="type for type in dataTypes" ng-change="chartUpdate(false)"></select>
+        <select ng-model="nbDays" ng-options="choices as choices.label for choices in nbDaysChoices" ng-change="chartUpdate(false)"></select>
+        <select ng-model="groupId" ng-options="groups as groups.id for groups in groupList" ng-change="chartUpdate(true)"></select>
     </div>
-    <chart value="dataHistory" type="Line" width="800" height="300"></chart>
+    <chart value="dataHistory" type="{{chartType}}" width="800" height="300" ng-init="chartType=''"></chart>
 </div>
 
 </div>

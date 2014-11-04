@@ -38,6 +38,8 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
         statsService.getStats()
             .success(function(data) {
                 $scope.stats = data;
+                chartType = "Line";
+                jQuery(".dataBlock span").show();
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -84,75 +86,31 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
     }
     $scope.init();
 
-    $scope.$watch(
-        'groupId',
-        function(value){
-            if (value.id !== 'none') {
-                $scope.dataTypes = _dataTypesByGroup;
-                // if dataType is not available (standard variation are not provided for stats by group)
-                if (_.indexOf($scope.dataTypes, $scope.dataType) === -1) {
-                    $scope.dataType = $scope.dataTypes[0];
+    $scope.chartUpdate = function(verifyGroupId) {
+        if (verifyGroupId && $scope.groupId.id !== 'none') {
+            $scope.dataTypes = _dataTypesByGroup;
+            // if dataType is not available (standard variation are not provided for stats by group)
+            if (_.indexOf($scope.dataTypes, $scope.dataType) === -1) {
+                $scope.dataType = $scope.dataTypes[0];
+            }
+        }
+        else {
+            $scope.dataTypes = _dataTypes;
+        }
+
+        statsService.getHistoryStats($scope.groupId.id, $scope.dataType, $scope.nbDays.nb)
+            .success(function(data) {
+                var unit = '';
+                if (data.unit && data.unit[$scope.dataType]) {
+                    unit = data.unit[$scope.dataType];
                 }
-            }
-            else {
-                $scope.dataTypes = _dataTypes;
-            }
-
-            statsService.getHistoryStats(value.id, $scope.dataType, $scope.nbDays.nb)
-                .success(function(data) {
-                    var unit = '';
-                    if (data.unit && data.unit[$scope.dataType]) {
-                        unit = data.unit[$scope.dataType];
-                    }
-
-                    if (data.date.length < 2) {
-                        console.log('Not enough data to display...');
-                    }
-
-                    $scope.dataHistory = chartService.confChart(data, $scope.dataType, unit);
-                })
-                .error(function(data) {
-                    console.log('Error: ' + data);
-                    $scope.error = true;
-                });
-        }
-    );
-
-    $scope.$watch(
-        'dataType',
-        function(value){
-            statsService.getHistoryStats($scope.groupId.id, value, $scope.nbDays.nb)
-                .success(function(data) {
-                    var unit = '';
-                    if (data.unit && data.unit[value]) {
-                        unit = data.unit[value];
-                    }
-                    $scope.dataHistory = chartService.confChart(data, value, unit);
-                })
-                .error(function(data) {
-                    console.log('Error: ' + data);
-                    $scope.error = true;
-                });
-        }
-    );
-
-    $scope.$watch(
-        'nbDays',
-        function(value){
-            statsService.getHistoryStats($scope.groupId.id, $scope.dataType, value.nb)
-                .success(function(data) {
-                    var unit = '';
-                    if (data.unit && data.unit[$scope.dataType]) {
-                        unit = data.unit[$scope.dataType];
-                    }
-                    $scope.dataHistory = chartService.confChart(data, $scope.dataType, unit);
-                })
-                .error(function(data) {
-                    console.log('Error: ' + data);
-                    $scope.error = true;
-                });
-        }
-    );
+                $scope.dataHistory = chartService.confChart(data, $scope.dataType, unit);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+                $scope.error = true;
+            });
+    }
 
 }]);
 

@@ -56,6 +56,9 @@
     float: right;
     font-size: 120%;
 }
+.dataBlock span {
+    display:none;
+}
 .ui-progressbar {
     position: relative;
     margin: 10px;
