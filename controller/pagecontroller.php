@@ -36,13 +36,4 @@ class PageController extends Controller {
         return $this->render('main');
     }
 
-    protected function formatSize($size) {
-        return \OCP\Util::humanFileSize($size);
-    }
-
-    protected function formatNumber($number) {
-        return sprintf("%.2f", $number);
-    }
-
-
 }

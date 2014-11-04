@@ -14,7 +14,15 @@ use OCA\Dashboard\Lib\Helper;
 
 class HistoryService {
 
+    /**
+     * @var \OCA\Dashboard\Db\HistoryMapper $historyMapper
+     */
     protected $historyMapper;
+
+    /**
+     * @var \OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper
+     */
+    protected $historyByGroupMapper;
 
     public function __construct(\OCA\Dashboard\Db\HistoryMapper $historyMapper, \OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper) {
         $this->historyMapper = $historyMapper;
@@ -23,17 +31,17 @@ class HistoryService {
 
     /**
      * Returns datas from history
-     * @param string $gid Group id, if you want stats for only one group (this group MUST be conf-ed in admin page)
+     * @param string $gid Group id, if you want stats for only one group (this group MUST be conf-ed in admin page), 'none' (default) if you want global datas
      * @param string $dataType The type of data you want, 'all' (default) if you want all datas.
-     * @param integer $range Number of days from today you want to get the datas
+     * @param integer $range Number of days from today you want to get the datas (30 days by default)
      * @param integer $wanHumanReadable If you want to show humanreable values (1) or not (0)
      * @throws OCA\Dashboard\Service\HistoryStatsUnknownDatatypeException
      * @throws OCA\Dashboard\Service\HistoryStatsInvalidRangeException
+     * @return array
      */
     public function getHistoryStats($gid='none', $dataType='all', $range=30, $wantHumanReadable = 1) {
-        $statName = array(
+        $statNameByGroup = array(
             'date',
-            'defaultQuota',
             'totalUsedSpace',
             'nbUsers',
             'nbFolders',
@@ -46,10 +54,13 @@ class HistoryService {
             'sizePerFolder',
             'filesPerFolder',
             'sizePerFile',
+        );
+        $statName = array_merge($statNameByGroup, array(
+            'defaultQuota',
             'stdvFilesPerUser',
             'stdvFoldersPerUser',
             'stdvSharesPerUser',
-        );
+        ));
         $humanReadable = array(
             'totalUsedSpace',
             'sizePerUser',
@@ -61,12 +72,14 @@ class HistoryService {
         // stat enabled groups list
         if ($gid !== 'none' and Helper::isDashboardGroupsEnabled()) {
             $statsByGroup = true;
-            $statEnabledGroupList = Helper::getDashboardGroupList();
-            // TODO: THROWS EXCEPTION IF ASKED GID NOT IN LIST (CREATE EXCEPTION CLASS)
         }
 
         if ($dataType !== 'all') {
-            // TODO: MANAGE DATATYPE LIST FOR STATS BY GROUP (NO STANDARD VARIATION)
+            if ($gid === 'none' and !in_array($dataType, $statNameByGroup)) {
+                throw new HistoryStatsInvalidDatatypeException();
+
+            }
+
             if (!in_array($dataType, $statName)) {
                 throw new HistoryStatsUnknownDatatypeException();
 
@@ -109,10 +122,6 @@ class HistoryService {
                     list($year, $month, $day) = explode('-', $date);
                     array_push($arrayDatas['date'], (int)$day);
                 }
-                // elseif ($name == "totalUsedSpace") {
-                //     $tempo = $totalUsedSpace = $data->getTotalUsedSpace();
-                //     array_push($arrayDatas[$name], round($totalUsedSpace, 2));
-                // }
                 else {
                     $func = 'get' . ucfirst($name);
                     array_push($arrayDatas[$name], (float)$data->$func());

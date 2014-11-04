@@ -78,7 +78,6 @@ class APIGroupsController extends APIController
     /**
      * Returns list of stat's enabled groups
      * @NoAdminRequired
-     * @NoCSRFRequired
      * @param int $range Number of days from today you want to get the groups
      * @return array
      */

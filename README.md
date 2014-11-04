@@ -21,6 +21,8 @@ These informations are gathered :
 * (standard deviation) nb of folders per user,
 * (standard deviation) nb of shares per user
 
+Stats may be consulted filtered by group. In this last case, standard variations are not provided.
+
 Cron task is used for historization and chart may be displayed for the last week, month, semester or year for one the data in the list above.
 
 ## JSON API
@@ -31,11 +33,12 @@ Real time stats extracting :
 `[owncloud]/index.php/apps/dashboard/api/1.0/stats.[format]`
 
 History stats :
-`[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/[format]/[dataType]/[nbDays]/[wantHumanreadable]`
+`[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/[group_id]/[format]/[dataType]/[nbDays]/[wantHumanreadable]`
 
 where
 * `[owncloud]` is the web url to your owncloud instance
-* `[format]` is the format in which you want your stats (json or xml)
+* `[group_id]` is the group id (gid) you want to filter on. If you want global infos (all groups), set it to 'none'.
+* `[format]` is the format in which you want your stats ('json' or 'xml')
 * `[dataType]` is one of totalUsedSpace, nbUsers,nbFolders, nbFiles,nbShares, sizePerUser, foldersPerUser, filesPerUser, sharesPerUser, sizePerFolder, filesPerFolder, sizePerFile, stdvFilesPerUser, stdvFoldersPerUser, stdvSharesPerUser.
 * `[nbDays]` is the number of days from todays you want datas.
 * `[wantHumanreadable]` allows you to choose if you want human readable values (set to 1) or not (set to 0)
@@ -44,14 +47,14 @@ Human readable values are only possible for total used space, file size per user
 For example, 2147483647 bytes will be displayed as  2 GB.
 If you set `wantHumanReadable` to 1, a `unit` property will be added to the result, containing the adequate units.
 
-Warning, as for ownCloud 7.0.2, you **must** set all these parameters ([format], [dataType], [nbDays], [wantHumanreadable]) in urls.
-Like this : `[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/json/nbUsers/30/0`
+Warning, as for ownCloud 7.0.3RC2, you **must** set all these parameters ([group_id], [format], [dataType], [nbDays], [wantHumanreadable]) in urls.
+Like this : `[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/json/none/nbUsers/30/0`
 
 Please note that this json api has public access. A restriction mechanism may be added later but is not present for now. In the meantime, .htaccess may be used to restrict access by IP, for instance.
 
 ## Random test datas
 
-A command line utility exists, allowing to populate this app history table with random datas.
+A command line utility exists, allowing to populate this app history tables with random datas.
 
 Usage:
 
@@ -61,7 +64,8 @@ cd [owncloud]/
 ```
 where `[owncloud]` is the install folder of your owncloud instance
 
-Warning : datas are added to the table, so you may want to truncate the `*prefix*_dashboard_history` table before running this command.
+Warning : datas are added to the table, so you may want to truncate the `*prefix*dashboard_history` and `*prefix*dashboard_history_by_group` tables before running this command. The `-t` option does the job for you.
+Cf `./occ help dashboard:populate` for more informations.
 
 ## Install
 

@@ -6,6 +6,9 @@
  * @license This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
 
+/**
+ * Statistics services
+ */
 angular.module('dashboard.services.stats', [])
     .factory('statsService', ['$http', function($http){
         var doGetStats = function() {
@@ -14,12 +17,16 @@ angular.module('dashboard.services.stats', [])
         var doGetHistoryStats = function(gid, dataType, nbDays) {
             return $http.get(OC.generateUrl('/apps/dashboard/api/1.0/history_stats/json/' + gid + '/' + dataType + '/' + nbDays + '/1'));
         }
+
         return {
             getStats: function() { return doGetStats(); },
             getHistoryStats: function(gid, dataType, nbDays) { return doGetHistoryStats(gid, dataType, nbDays); },
         };
     }]);
 
+/**
+ * Chart service (conf settings)
+ */
 angular.module('dashboard.services.chart', [])
     .factory('chartService', [function(){
         var doConfChart = function(data, item, unit) {
@@ -56,11 +63,15 @@ angular.module('dashboard.services.chart', [])
 
             return {"data": dataHistoryConf, "options": options};
         }
+
         return {
             confChart: function(data, item, unit) { return doConfChart(data, item, unit) }
         }
     }]);
 
+/**
+ * Groups services
+ */
 angular.module('dashboard.services.groups', [])
     .factory('groupsService', ['$http', function($http){
         var doIsGroupsEnabled = function() {

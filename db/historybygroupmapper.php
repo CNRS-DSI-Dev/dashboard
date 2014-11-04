@@ -18,20 +18,12 @@ class HistoryByGroupMapper extends Mapper {
         parent::__construct($db, 'dashboard_history_by_group');
     }
 
-    public function findAll($limit=null, $offset=null) {
-        $sql = "SELECT * FROM *PREFIX*dashboard_history_by_group";
-        return $this->findEntities($sql, $limit, $offset);
-    }
-
-    public function countFrom($datetime) {
-        $sql = "SELECT id FROM *PREFIX*dashboard_history_by_group WHERE date > ? ORDER BY date";
-        return $this->findEntities($sql, array(
-            $datetime->format('Y-m-d H:i:s'),
-        ));
-    }
-
+    /**
+     * Returns groups from given date if there is more than one data (displaying chart needs at least two datas)
+     * @param \DateTime $datetime From when you want to get groups
+     */
     public function findAllGidFrom($datetime) {
-        $sql = "SELECT distinct(gid) FROM *PREFIX*dashboard_history_by_group WHERE date > ? ORDER BY gid";
+        $sql = "SELECT distinct(gid) FROM *PREFIX*dashboard_history_by_group WHERE date > ? GROUP BY gid HAVING COUNT(gid) > 1 ORDER BY gid";
         return $this->findEntities($sql, array(
             $datetime->format('Y-m-d H:i:s'),
         ));

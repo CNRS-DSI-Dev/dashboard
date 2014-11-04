@@ -73,9 +73,7 @@ class GroupsService
         $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
         $datetime->setTime(23, 59, 59);
         $groups = $this->historyByGroupMapper->findAllGidFrom($datetime);
-$f = fopen('/tmp/truc.log', 'a');
-fputs($f, print_r($groups, true) . "\n");
-fclose($f);
+
         return $groups;
     }
 

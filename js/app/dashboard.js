@@ -14,7 +14,9 @@ dashboard.config(['$httpProvider', function($httpProvider) {
 }]);
 
 dashboard.controller('statsController', ['$scope', 'statsService', 'groupsService', 'chartService', function($scope, statsService, groupsService, chartService) {
-    $scope.dataTypes = ['totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares', 'sizePerUser', 'foldersPerUser', 'filesPerUser', 'sharesPerUser', 'sizePerFolder', 'filesPerFolder', 'sizePerFile', 'stdvFilesPerUser', 'stdvFoldersPerUser', 'stdvSharesPerUser'];
+    _dataTypes = ['totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares', 'sizePerUser', 'foldersPerUser', 'filesPerUser', 'sharesPerUser', 'sizePerFolder', 'filesPerFolder', 'sizePerFile', 'stdvFilesPerUser', 'stdvFoldersPerUser', 'stdvSharesPerUser'];
+    _dataTypesByGroup = ['totalUsedSpace', 'nbUsers', 'nbFolders', 'nbFiles', 'nbShares', 'sizePerUser', 'foldersPerUser', 'filesPerUser', 'sharesPerUser', 'sizePerFolder', 'filesPerFolder', 'sizePerFile'];
+    $scope.dataTypes = _dataTypes;
     $scope.dataType = 'nbUsers';
 
     $scope.nbDaysChoices = [
@@ -27,6 +29,7 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
 
     $scope.dashboardGroupsEnabled = false;
     $scope.groupList = [];
+    $scope.groupId = 'all';
 
     /**
      * Initialisation
@@ -64,13 +67,14 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
 
         groupsService.getStatsEnabledGroups()
             .success(function(data) {
-                console.log(data);
                 if (data == null || data == undefined) {
                     $scope.groupList = [];
                 }
                 else {
-                    $scope.groupList = JSON.parse(data.groups);
-                    console.log($scope.groupList);
+                    $scope.groupList = data.groups;
+                    $scope.groupList.unshift({id:'none'});
+
+                    $scope.groupId = $scope.groupList[0];
                 }
             })
             .error(function(data) {
@@ -83,12 +87,28 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
     $scope.$watch(
         'groupId',
         function(value){
+            if (value.id !== 'none') {
+                $scope.dataTypes = _dataTypesByGroup;
+                // if dataType is not available (standard variation are not provided for stats by group)
+                if (_.indexOf($scope.dataTypes, $scope.dataType) === -1) {
+                    $scope.dataType = $scope.dataTypes[0];
+                }
+            }
+            else {
+                $scope.dataTypes = _dataTypes;
+            }
+
             statsService.getHistoryStats(value.id, $scope.dataType, $scope.nbDays.nb)
                 .success(function(data) {
                     var unit = '';
                     if (data.unit && data.unit[$scope.dataType]) {
                         unit = data.unit[$scope.dataType];
                     }
+
+                    if (data.date.length < 2) {
+                        console.log('Not enough data to display...');
+                    }
+
                     $scope.dataHistory = chartService.confChart(data, $scope.dataType, unit);
                 })
                 .error(function(data) {
