@@ -75,9 +75,8 @@ class HistoryService {
         }
 
         if ($dataType !== 'all') {
-            if ($gid === 'none' and !in_array($dataType, $statNameByGroup)) {
+            if ($gid !== 'none' and !in_array($dataType, $statNameByGroup)) {
                 throw new HistoryStatsInvalidDatatypeException();
-
             }
 
             if (!in_array($dataType, $statName)) {
