@@ -21,9 +21,14 @@ These informations are gathered :
 * (standard deviation) nb of folders per user,
 * (standard deviation) nb of shares per user
 
-Stats may be consulted filtered by group. In this last case, standard variations are not provided.
-
 Cron task is used for historization and chart may be displayed for the last week, month, semester or year for one the data in the list above.
+
+## Stats by group (v1.2+)
+
+Stats may be filtered by group. In this last case, standard variations are not provided.
+
+You must set the group list - on admin page - if you want to activate stats by group, and if so, for which groups. These groups will be used by cron job.
+The group list filter box on dashboard page is built from what is present in database for the choosed time range.
 
 ## JSON API
 
