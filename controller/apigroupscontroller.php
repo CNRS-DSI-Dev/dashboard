@@ -61,7 +61,7 @@ class APIGroupsController extends APIController
      */
     public function groups($search='')
     {
-        \OC_JSON::checkAdminUser();
+        \OCP\JSON::checkAdminUser();
 
         $groups = array();
 

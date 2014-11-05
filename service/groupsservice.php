@@ -15,8 +15,10 @@ class GroupsService
 
     protected $historyByGroupMapper;
 
-    public function __construct(\OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper)
+    public function __construct($userManager, $groupManager, \OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper)
     {
+        $this->userManager = $userManager;
+        $this->groupManager = $groupManager;
         $this->historyByGroupMapper = $historyByGroupMapper;
     }
 
@@ -27,11 +29,11 @@ class GroupsService
      */
     public function groups($search='')
     {
-        $groupManager = \OC_Group::getManager();
+        $group = $this->groupManager->get('admin');
+        $uid = \OCP\User::getUser();
+        $isAdmin = $group->inGroup($this->userManager->get($uid));
 
-        $isAdmin = \OC_User::isAdminUser(\OCP\User::getUser());
-
-        $groupsInfo = new \OC\Group\MetaData(\OC_User::getUser(), $isAdmin, $groupManager);
+        $groupsInfo = new \OC\Group\MetaData(\OCP\User::getUser(), $isAdmin, $this->groupManager);
         $groupsInfo->setSorting($groupsInfo::SORT_USERCOUNT);
         list($adminGroup, $groups) = $groupsInfo->get($search);
 

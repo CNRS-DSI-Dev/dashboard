@@ -91,6 +91,8 @@ class Dashboard extends App {
 
         $container->registerService('GroupsService', function($c){
             return new GroupsService(
+                $c->query('UserManager'),
+                $c->query('GroupManager'),
                 $c->query('HistoryByGroupMapper')
             );
         });

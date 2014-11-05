@@ -40,13 +40,11 @@
                 title-field="name"
                 clear-selected="true"></angucomplete-alt>
 
-            <?php if (\OC_User::isAdminUser(\OCP\User::getUser())) { ?>
             <span class="utils">
                 <a href="#" class="action delete" original-title="<?php p($l->t('Delete'))?>" ng-click="deleteGroup()">
                     <img src="<?php print_unescaped(image_path('core', 'actions/delete.svg')) ?>" class="svg" />
                 </a>
             </span>
-            <?php } ?>
 
         </div>
 

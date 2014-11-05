@@ -10,7 +10,7 @@
 
 namespace OCA\Dashboard;
 
-\OC_Util::checkAdminUser();
+\OCP\User::checkAdminUser();
 
 $tmpl = new \OCP\Template('dashboard', 'settings-admin');
 
