@@ -17,4 +17,6 @@
 "Standard deviation" => "Ecart-type ",
 "standard deviation" => "écart-type ",
 "Search group" => "Chercher parmi les groupes",
+"Allow to get and store stats for some groups" => "Activer la récupération et l'enregistrement des stats par groupes",
+"List of groups" => "Liste des groupes",
 );

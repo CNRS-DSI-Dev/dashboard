@@ -22,12 +22,12 @@
     <p>
         <input type="checkbox" ng-model="dashboardGroupsEnabled"
             ng-true-value="yes" ng-false-value="no" ng-change="storeChoice()">
-        <label for="dashboardGroupsEnabled"><?php p($l->t('Allow to get and store stats for some groups.'));?></label>
+        <label for="dashboardGroupsEnabled"><?php p($l->t('Allow to get and store stats for some groups'));?></label>
     </p>
 
     <div id="dashboardGroups" class="indent" ng-show="dashboardGroupsEnabled" ng-cloak class="ng-cloak">
 
-        <h3>List of groups.<p>
+        <h3><?php p($l->t('List of groups')); ?><p>
 
         <div id="searchGroup">
             <angucomplete-alt id="groups"
