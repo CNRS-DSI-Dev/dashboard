@@ -3,7 +3,7 @@
     <id>dashboard</id>
     <name>Dashboard</name>
     <description>Get and display some use stats</description>
-    <version>1.1</version>
+    <version>1.2</version>
     <licence>AGPL</licence>
     <author>Patrick Paysant / CNRS</author>
     <require>7</require>
