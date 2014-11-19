@@ -72,6 +72,7 @@ class APIStatsController extends APIController {
      * Returns real time informations
      * @NoAdminRequired
      * @NoCSRFRequired
+     * @Publicpage
      * @CORS
      */
     public function stats() {
@@ -109,6 +110,7 @@ class APIStatsController extends APIController {
      * Get stats for a number of days
      * @NoAdminRequired
      * @NoCSRFRequired
+     * @PublicPage
      * @CORS
      */
     public function historyStats($gid='none', $dataType='all', $range=30, $wanthumanreadable=1) {
