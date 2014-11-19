@@ -72,7 +72,7 @@ class APIStatsController extends APIController {
      * Returns real time informations
      * @NoAdminRequired
      * @NoCSRFRequired
-     * @Publicpage
+     * @PublicPage
      * @CORS
      */
     public function stats() {
