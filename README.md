@@ -28,7 +28,7 @@ Cron task is used for historization and chart may be displayed for the last week
 Stats may be filtered by group. In this last case, standard variations are not provided.
 
 You must set the group list - on admin page - if you want to activate stats by group, and if so, for which groups. These groups will be used by cron job.
-The group list filter box on dashboard page is built from what is present in database for the choosed time range.
+The group list filter box on dashboard page is built from what is present in database for the chosen time range.
 
 ## JSON API
 
