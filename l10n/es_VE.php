@@ -17,4 +17,6 @@
 "Standard deviation" => "Desviacion estandar ",
 "standard deviation" => "Desviacion estandar ",
 "Search group" => "Buscar grupo",
+"Allow to get and store stats for some groups" => "Permitir obtener y guardar stadisticas para algunos grupos",
+"List of groups" => "Lista de grupos",
 );
