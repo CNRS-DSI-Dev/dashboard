@@ -21,7 +21,7 @@
 <div ng-app="dashboard" ng-controller="statsController">
 
 <div id="dashboard">
-    Dashboard
+    <?php p($l->t('Dashboard')); ?>
 </div>
 
 <div id="container">
