@@ -78,6 +78,7 @@ class APIGroupsController extends APIController
     /**
      * Returns list of stat's enabled groups
      * @NoAdminRequired
+     * @NoCSRFRequired
      * @param int $range Number of days from today you want to get the groups
      * @return array
      */
@@ -96,9 +97,12 @@ class APIGroupsController extends APIController
             return $response->setStatus(\OCA\AppFramework\Http::STATUS_NOT_FOUND);
         }
 
-        return new JSONResponse(array(
+        // return new JSONResponse(array(
+        //     'groups' => $groups,
+        // ));
+        return array(
             'groups' => $groups,
-        ));
+        );
     }
 
 }
