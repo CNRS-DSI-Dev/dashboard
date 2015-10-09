@@ -48,6 +48,8 @@ where
 * `[nbDays]` is the number of days from todays you want datas.
 * `[wantHumanreadable]` allows you to choose if you want human readable values (set to 1) or not (set to 0)
 
+You may use 'last' as `[nbDays]` value if you want the last extracted stats (ie the one day stats extracted the more recently)
+
 Human readable values are only possible for total used space, file size per user, size per folder or size per file.
 For example, 2147483647 bytes will be displayed as  2 GB.
 If you set `wantHumanReadable` to 1, a `unit` property will be added to the result, containing the adequate units.

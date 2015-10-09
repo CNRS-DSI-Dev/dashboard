@@ -49,7 +49,7 @@ class APIStatsController extends APIController {
         );
 
         try {
-            $history = $this->historyService->getHistoryStats('none', 'all', 1, 0);
+            $history = $this->historyService->getHistoryStats('none', 'all', 'last', 0);
         } catch (Exception $e) {
             $response = new JSONResponse();
             return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);
