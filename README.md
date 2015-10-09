@@ -57,6 +57,21 @@ Like this : `[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/json/none
 
 Please note that this json api has public access. A restriction mechanism may be added later but is not present for now. In the meantime, .htaccess may be used to restrict access by IP, for instance.
 
+## Cron
+
+In some cases, you may want to not use cron to extract the stats, as the cron system will run lot of proccess simultaneously. To ease these cases, you may disable the cron utility for Dashbord with a system conf (in config.php) :
+
+```php
+'dashboard_no_cron' => true,
+```
+
+Then there is a command line utility to extract the stats
+
+```shell
+cd [owncloud]/
+./occ dashboard:stats
+```
+
 ## Random test datas
 
 A command line utility exists, allowing to populate this app history tables with random datas.
