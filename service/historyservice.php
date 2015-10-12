@@ -60,6 +60,7 @@ class HistoryService {
             'stdvFilesPerUser',
             'stdvFoldersPerUser',
             'stdvSharesPerUser',
+            'completeDate',
         ));
         $humanReadable = array(
             'totalUsedSpace',
@@ -86,11 +87,6 @@ class HistoryService {
             $statName = array('date', $dataType);
         }
 
-        if (intval($range) <= 0) {
-            throw new HistoryStatsInvalidRangeException();
-
-        }
-
         $arrayDatas = array();
         foreach($statName as $name) {
             $arrayDatas[$name] = array();
@@ -102,14 +98,25 @@ class HistoryService {
         }
 
         // get $range last days stats
-        $datetime = new \DateTime();
-        $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
-        $datetime->setTime(23, 59, 59);
-        if ($statsByGroup) {
-            $datas = $this->historyByGroupMapper->findAllFrom($gid, $datetime, $dataType);
+
+        // last is only usefull for stats not filtered by group
+        if ($range == 'last') {
+            $datas = $this->historyMapper->findLast();
         }
         else {
-            $datas = $this->historyMapper->findAllFrom($datetime, $dataType);
+            if (intval($range) <= 0) {
+                throw new HistoryStatsInvalidRangeException();
+            }
+
+            $datetime = new \DateTime();
+            $datetime->sub(new \dateInterval('P' . (int)$range . 'D'));
+            $datetime->setTime(23, 59, 59);
+            if ($statsByGroup) {
+                $datas = $this->historyByGroupMapper->findAllFrom($gid, $datetime, $dataType);
+            }
+            else {
+                $datas = $this->historyMapper->findAllFrom($datetime, $dataType);
+            }
         }
 
         // create a array struct
@@ -120,6 +127,9 @@ class HistoryService {
                     list($date, $time) = explode(' ', $data->getDate());
                     list($year, $month, $day) = explode('-', $date);
                     array_push($arrayDatas['date'], (int)$day);
+                }
+                elseif ($name == "completeDate") {
+                    array_push($arrayDatas['completeDate'], $data->getDate());
                 }
                 else {
                     $func = 'get' . ucfirst($name);

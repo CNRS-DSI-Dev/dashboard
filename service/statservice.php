@@ -151,7 +151,8 @@ class StatService
             $stats['totalSize'] += $user['filesize'];
 
             // shares
-            $stats['users'][$uid]['nbShares'] = $this->getSharesStats($uid);
+            // $stats['users'][$uid]['nbShares'] = $this->getSharesStats($uid);
+            $user['nbShares'] = $this->getSharesStats($uid);
             // $stats['totalShares'] += $stats['users'][$uid]['nbShares'];
             $stats['totalShares'] += $user['nbShares'];
 

@@ -48,6 +48,8 @@ where
 * `[nbDays]` is the number of days from todays you want datas.
 * `[wantHumanreadable]` allows you to choose if you want human readable values (set to 1) or not (set to 0)
 
+You may use 'last' as `[nbDays]` value if you want the last extracted stats (ie the one day stats extracted the more recently)
+
 Human readable values are only possible for total used space, file size per user, size per folder or size per file.
 For example, 2147483647 bytes will be displayed as  2 GB.
 If you set `wantHumanReadable` to 1, a `unit` property will be added to the result, containing the adequate units.
@@ -56,6 +58,21 @@ Warning, as for ownCloud 7.0.3RC2, you **must** set all these parameters ([group
 Like this : `[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/json/none/nbUsers/30/0`
 
 Please note that this json api has public access. A restriction mechanism may be added later but is not present for now. In the meantime, .htaccess may be used to restrict access by IP, for instance.
+
+## Cron
+
+In some cases, you may want to not use cron to extract the stats, as the cron system will run lot of proccess simultaneously. To ease these cases, you may disable the cron utility for Dashbord with a system conf (in config.php) :
+
+```php
+'dashboard_no_cron' => true,
+```
+
+Then there is a command line utility to extract the stats
+
+```shell
+cd [owncloud]/
+./occ dashboard:stats
+```
 
 ## Random test datas
 

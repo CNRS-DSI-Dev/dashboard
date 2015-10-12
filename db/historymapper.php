@@ -36,4 +36,11 @@ class HistoryMapper extends Mapper {
             $datetime->format('Y-m-d H:i:s'),
         ));
     }
+
+    public function findLast() {
+        $sql = "SELECT * FROM *PREFIX*dashboard_history
+            WHERE date = (SELECT MAX(date) FROM *PREFIX*dashboard_history)";
+
+        return array($this->findEntity($sql));
+    }
 }
