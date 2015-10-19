@@ -12,7 +12,7 @@ use OCA\Dashboard\App\Dashboard;
 
 $app = new Dashboard;
 $c = $app->getContainer();
-$statsTaskService = $c->query('StatsTaskService');
+$statService = $c->query('StatService');
 
 $application->add(new OCA\Dashboard\Command\Populate);
-$application->add(new OCA\Dashboard\Command\Stats($statsTaskService));
+$application->add(new OCA\Dashboard\Command\Stats($statService));
