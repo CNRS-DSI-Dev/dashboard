@@ -97,22 +97,13 @@ class StatService
             $stats['groups'] = array();
         }
 
-        // 'users' is a temporary container, won't be send back
-        // $stats['users'] = array();
-
         foreach ($users as $uid) {
-            //$userDirectory = $this->rootStorage . '/' . $uid . '/files';
             $userDirectory = '/' . $uid . '/files';
 
             if (!is_readable($dataRoot . $userDirectory)) {
                 continue;
             }
 
-            // $stats['users'][$uid] = array();
-            // $stats['users'][$uid]['nbFiles'] = 0;
-            // $stats['users'][$uid]['nbFolders'] = 0;
-            // $stats['users'][$uid]['nbShares'] = 0;
-            // $stats['users'][$uid]['filesize'] = 0;
             $user = array();
             $user['nbFiles'] = 0;
             $user['nbFolders'] = 0;
@@ -139,41 +130,28 @@ class StatService
             }
 
             // extract datas
-            // $this->getFilesStat($view, $userDirectory, $stats['users'][$uid]);
             $this->getFilesStat($view, $userDirectory, $user);
 
             // files stats
-            // $stats['totalFolders'] += $stats['users'][$uid]['nbFolders'];
             $stats['totalFolders'] += $user['nbFolders'];
-            // $stats['totalFiles'] += $stats['users'][$uid]['nbFiles'];
             $stats['totalFiles'] += $user['nbFiles'];
-            // $stats['totalSize'] += $stats['users'][$uid]['filesize'];
             $stats['totalSize'] += $user['filesize'];
 
             // shares
-            // $stats['users'][$uid]['nbShares'] = $this->getSharesStats($uid);
             $user['nbShares'] = $this->getSharesStats($uid);
-            // $stats['totalShares'] += $stats['users'][$uid]['nbShares'];
             $stats['totalShares'] += $user['nbShares'];
 
             // variance evolutions
-            // $nbFoldersVariance->addValue($stats['users'][$uid]['nbFolders']);
             $nbFoldersVariance->addValue($user['nbFolders']);
-            // $nbFilesVariance->addValue($stats['users'][$uid]['nbFiles']);
             $nbFilesVariance->addValue($user['nbFiles']);
-            // $nbSharesVariance->addValue($stats['users'][$uid]['nbShares']);
             $nbSharesVariance->addValue($user['nbShares']);
 
             // groups stats
             if ($statsByGroup) {
                 foreach($groupList as $group) {
-                    // $stats['groups'][$group]['nbFiles'] += $stats['users'][$uid]['nbFiles'];
                     $stats['groups'][$group]['nbFiles'] += $user['nbFiles'];
-                    // $stats['groups'][$group]['nbFolders'] += $stats['users'][$uid]['nbFolders'];
                     $stats['groups'][$group]['nbFolders'] += $user['nbFolders'];
-                    // $stats['groups'][$group]['nbShares'] += $stats['users'][$uid]['nbShares'];
                     $stats['groups'][$group]['nbShares'] += $user['nbShares'];
-                    // $stats['groups'][$group]['filesize'] += $stats['users'][$uid]['filesize'];
                     $stats['groups'][$group]['filesize'] += $user['filesize'];
                 }
             }
@@ -206,9 +184,6 @@ class StatService
         $stats['stdvNbFilesPerUser'] = $nbFilesVariance->getStandardDeviation();
         $stats['stdvNbFoldersPerUser'] = $nbFoldersVariance->getStandardDeviation();
         $stats['stdvNbSharesPerUser'] = $nbSharesVariance->getStandardDeviation();
-
-        // don't send back 'users' details
-        //unset($stats['users']);
 
         return $stats;
     }
