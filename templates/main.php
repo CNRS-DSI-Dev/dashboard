@@ -56,7 +56,7 @@
 <div id="shares" class="dataBlock">
     <p class="header"><?php p($l->t('Shares')); ?> <span>{{ stats.history.nbShares }}</span></p>
     <p><?php p($l->t('Shares / user')); ?>: <span>{{ stats.history.sharesPerUser | number:2 }}</span></p>
-    <p><?php p($l->t('Standard deviation')); ?>: <span>{{ stats.history.stdvFilesPerUser | number:2 }}</span></p>
+    <p><?php p($l->t('Standard deviation')); ?>: <span>{{ stats.history.stdvSharesPerUser | number:2 }}</span></p>
     <br>
 </div>
 
