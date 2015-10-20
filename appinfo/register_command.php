@@ -12,7 +12,9 @@ use OCA\Dashboard\App\Dashboard;
 
 $app = new Dashboard;
 $c = $app->getContainer();
-$statsTaskService = $c->query('StatsTaskService');
+$statService = $c->query('StatService');
+$historyMapper = $c->query('HistoryMapper');
+$historyByGroupMapper = $c->query('HistoryByGroupMapper');
 
 $application->add(new OCA\Dashboard\Command\Populate);
-$application->add(new OCA\Dashboard\Command\Stats($statsTaskService));
+$application->add(new OCA\Dashboard\Command\Stats($statService, $historyMapper, $historyByGroupMapper));
