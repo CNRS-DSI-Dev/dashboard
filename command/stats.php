@@ -15,6 +15,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use OCA\Dashboard\Db\HistoryMapper;
+use OCA\Dashboard\Db\History;
+use OCA\Dashboard\Db\HistoryByGroupMapper;
+use OCA\Dashboard\Db\HistoryByGroup;
 use OCA\Dashboard\Service\StatService;
 use OCA\Dashboard\Service\Variance;
 use OCA\dashboard\lib\Helper;
@@ -22,15 +26,18 @@ use OCA\dashboard\lib\Helper;
 class Stats extends Command {
 
     protected $statsTaskService;
+    protected $historyMapper;
+    protected $historyByGroupMapper;
     protected $path;
-    protected $countUsers;
     protected $datas;
     protected $stats;
 
-    public function __construct(StatService $statService)
+    public function __construct(StatService $statService, HistoryMapper $historyMapper,HistoryByGroupMapper $historyByGroupMapper)
     {
         $this->statsTaskService = $statsTaskService;
         $this->statService = $statService;
+        $this->historyMapper = $historyMapper;
+        $this->historyByGroupMapper = $historyByGroupMapper;
 
         parent::__construct();
     }
@@ -46,7 +53,8 @@ class Stats extends Command {
             ->setName('dashboard:stats')
             ->setDescription('Get realtime stats and insert them into '
                 . $prefix . 'dashboard_history and '
-                . $prefix . 'dashboard_history_by_group (if needed) tables.');
+                . $prefix . 'dashboard_history_by_group (if needed) tables.')
+            ->addOption('console', 'o', InputOption::VALUE_NONE, 'Show stats on console instead of storing them in database.');
     }
 
     /**
@@ -58,40 +66,49 @@ class Stats extends Command {
     {
         $output->writeln('Beginning');
 
-        $time_start = microtime(true);
-        $this->stats = $this->getStats();
-        $time_end = microtime(true);
+        $now = new \DateTime();
+        $now->setTime(0, 0, 0);
+        $datas = $this->historyMapper->countFrom($now);
 
-        $time = $time_end - $time_start;
+        if (!$input->getOption('console')) {
+            // If there's not already a history in database for today stats
+            if (count($datas) <= 0) {
+                $time_start = microtime(true);
+                $this->stats = $this->getStats();
+                $time_end = microtime(true);
 
-        // Display
-        $output->writeln("Stats for " . $this->statService->getUserDataDir());
-        $output->writeln("  defaultQuota  : " . $this->humanFilesize($this->stats['defaultQuota']));
-        $output->writeln("  nbFiles : " . $this->stats['totalFiles'] . " for " . $this->humanFilesize($this->stats['totalSize']));
-        $output->writeln("  nbDirs  : " . $this->stats['totalFolders']);
-        $output->writeln("  nbShares  : " . $this->stats['totalShares']);
-        $output->writeln("  time needed to go through entire filetree : " . $time);
-        $output->writeln("  nbUsers : ". count($this->datas['users']));
-        $output->writeln("  filesPerUser : ". $this->stats['filesPerUser']);
-        $output->writeln("  filesPerFolder : ". $this->stats['filesPerFolder']);
-        $output->writeln("  foldersPerUser : ". $this->stats['foldersPerUser']);
-        $output->writeln("  sharesPerUser : ". $this->stats['sharesPerUser']);
-        $output->writeln("  sizePerUser : ". $this->stats['sizePerUser']);
-        $output->writeln("  sizePerFile : ". $this->stats['sizePerFile']);
-        $output->writeln("  sizePerFolder : ". $this->stats['sizePerFolder']);
-        $output->writeln("  stdvNbFilesPerUser : ". $this->stats['stdvNbFilesPerUser']);
-        $output->writeln("  stdvNbFoldersPerUser : ". $this->stats['stdvNbFoldersPerUser']);
-        $output->writeln("  stdvNbSharesPerUser : ". $this->stats['stdvNbSharesPerUser']);
+                $time = $time_end - $time_start;
+                $output->writeln('Stats extracted in ' . $time . "s.");
 
-        // stats by group ?
-        if (Helper::isDashboardGroupsEnabled() and !empty($this->stats['groups'])) {
-            // One stat line per group for today
-            foreach($this->stats['groups'] as $groupName => $groupInfo) {
-                $output->writeln("  GROUP : " . $groupName);
-                $output->writeln("    nbUsers : " . $groupInfo['nbUsers']);
-                $output->writeln("    nbFiles : " . $groupInfo['nbFiles']);
-                $output->writeln("    nbFolders : " . $groupInfo['nbFolders']);
+                $now = new \DateTime();
+                $now = $now->format("Y-m-d H:i:s");
+
+                $history = $this->createHistory($this->stats, $now);
+                $this->historyMapper->insert($history);
+
+                // stats by group ?
+                if (Helper::isDashboardGroupsEnabled() and !empty($this->stats['groups'])) {
+                    // One stat line per group for today
+                    foreach($this->stats['groups'] as $groupName => $groupInfo) {
+                        $historyByGroup = $this->createHistoryByGroup($groupName, $groupInfo, $now);
+                        $this->historyByGroupMapper->insert($historyByGroup);
+                    }
+                }
             }
+            else {
+                $output->writeln('Dashboard stats already existing in database for today.');
+            }
+        }
+        else {
+            $time_start = microtime(true);
+            $this->stats = $this->getStats();
+            $time_end = microtime(true);
+
+            $time = $time_end - $time_start;
+            $output->writeln('Stats extracted in ' . $time . "s.");
+
+            // Display on console instead of insert on database
+            $this->displayStats($output);
         }
 
         $output->writeln('Done');
@@ -111,14 +128,14 @@ class Stats extends Command {
     }
 
     /**
-     * Go through the $this->path directory
-     * @return [type] [description]
+     * Extract the global stats
+     * @return array
      */
     protected function getStats()
     {
         $this->setPath($this->statService->getUserDataDir());
         $this->datas['users'] = $this->getUsers();
-        $this->countUsers = count($this->datas['users']);
+        $countUsers = count($this->datas['users']);
 
         // initialize variances
         $nbFoldersVariance = new Variance;
@@ -195,11 +212,11 @@ class Stats extends Command {
         }
 
         // some basic stats
-        $stats['filesPerUser'] = ($this->countUsers == 0) ? $stats['totalFiles'] : $stats['totalFiles'] / $this->countUsers;
+        $stats['filesPerUser'] = ($countUsers == 0) ? $stats['totalFiles'] : $stats['totalFiles'] / $countUsers;
         $stats['filesPerFolder'] = ($stats['totalFolders'] == 0) ? $stats['totalFiles']  : $stats['totalFiles'] / $stats['totalFolders'];
-        $stats['foldersPerUser'] = ($this->countUsers == 0) ? $stats['totalFolders'] : $stats['totalFolders'] / $this->countUsers;
-        $stats['sharesPerUser'] = ($this->countUsers == 0) ? $stats['totalShares'] : $stats['totalShares'] / $this->countUsers;
-        $stats['sizePerUser'] = ($this->countUsers == 0) ? $stats['totalSize'] : $stats['totalSize'] / $this->countUsers;
+        $stats['foldersPerUser'] = ($countUsers == 0) ? $stats['totalFolders'] : $stats['totalFolders'] / $countUsers;
+        $stats['sharesPerUser'] = ($countUsers == 0) ? $stats['totalShares'] : $stats['totalShares'] / $countUsers;
+        $stats['sizePerUser'] = ($countUsers == 0) ? $stats['totalSize'] : $stats['totalSize'] / $countUsers;
         $stats['sizePerFile'] = ($stats['totalFiles'] == 0) ? $stats['totalSize'] : $stats['totalSize'] / $stats['totalFiles'];
         $stats['sizePerFolder'] = ($stats['totalFolders'] == 0) ?  $stats['totalSize'] : $stats['totalSize'] / $stats['totalFolders'];
 
@@ -306,47 +323,93 @@ class Stats extends Command {
     }
 
     /**
-     * Return readable string of a big number of bits
-     * @param  [type]  $bytes    [description]
-     * @param  integer $decimals [description]
-     * @return [type]            [description]
+     * @return \OCA\Dashboard\Db\History
      */
-    protected function humanFilesize($bytes, $decimals = 2)
+    protected function createHistory($globalStorageInfo, $when) {
+        $history = new History;
+
+        $history->setDate($when);
+        $history->setNbUsers(count($this->datas['users']));
+        $history->setDefaultQuota($globalStorageInfo['defaultQuota']);
+        $history->setNbFolders($globalStorageInfo['totalFolders']);
+        $history->setNbFiles($globalStorageInfo['totalFiles']);
+        $history->setNbShares($globalStorageInfo['totalShares']);
+        $history->setTotalUsedSpace($globalStorageInfo['totalSize']);
+        $history->setSizePerUser($globalStorageInfo['sizePerUser']);
+        $history->setFoldersPerUser($globalStorageInfo['foldersPerUser']);
+        $history->setFilesPerUser($globalStorageInfo['filesPerUser']);
+        $history->setSharesPerUser($globalStorageInfo['sharesPerUser']);
+        $history->setSizePerFolder($globalStorageInfo['sizePerFolder']);
+        $history->setFilesPerFolder($globalStorageInfo['filesPerFolder']);
+        $history->setSizePerFile($globalStorageInfo['sizePerFile']);
+        $history->setStdvFilesPerUser($globalStorageInfo['stdvNbFilesPerUser']);
+        $history->setStdvFoldersPerUser($globalStorageInfo['stdvNbFoldersPerUser']);
+        $history->setStdvSharesPerUser($globalStorageInfo['stdvNbSharesPerUser']);
+
+        return $history;
+    }
+
+    /**
+     * @param string $groupName Group gid
+     * @param array $groupInfo Group stats
+     * @param string $when datetime
+     * @return \OCA\Dashboard\Db\HistoryByGroup
+     */
+    protected function createHistoryByGroup($groupName, $groupInfo, $when) {
+        $historyByGroup = new HistoryByGroup;
+
+        $historyByGroup->setGid($groupName);
+        $historyByGroup->setDate($when);
+        $historyByGroup->setTotalUsedSpace($groupInfo['filesize']);
+        $historyByGroup->setNbUsers($groupInfo['nbUsers']);
+        $historyByGroup->setNbFolders($groupInfo['nbFolders']);
+        $historyByGroup->setNbFiles($groupInfo['nbFiles']);
+        $historyByGroup->setNbShares($groupInfo['nbShares']);
+        $historyByGroup->setSizePerUser($groupInfo['sizePerUser']);
+        $historyByGroup->setFilesPerUser($groupInfo['filesPerUser']);
+        $historyByGroup->setFoldersPerUser($groupInfo['foldersPerUser']);
+        $historyByGroup->setSharesPerUser($groupInfo['sharesPerUser']);
+        $historyByGroup->setSizePerFolder($groupInfo['sizePerFolder']);
+        $historyByGroup->setFilesPerFolder($groupInfo['filesPerFolder']);
+        $historyByGroup->setSizePerFile($groupInfo['sizePerFile']);
+
+        return $historyByGroup;
+    }
+
+    /**
+     * Displays stats on console
+     * @param OutputInterface $output
+     */
+    protected function displayStats(OutputInterface $output)
     {
-      $sz = 'BKMGTP';
-      $factor = floor((strlen($bytes) - 1) / 3);
-      return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
-    }
-}
+        // Display
+        $output->writeln("Stats for " . $this->statService->getUserDataDir());
+        $output->writeln("  defaultQuota   : " . \OC_Helper::humanFilesize($this->stats['defaultQuota']));
+        $output->writeln("  nbFiles        : " . $this->stats['totalFiles'] . " for " . \OC_Helper::humanFilesize($this->stats['totalSize']));
+        $output->writeln("  nbDirs         : " . $this->stats['totalFolders']);
+        $output->writeln("  nbShares       : " . $this->stats['totalShares']);
+        $output->writeln("  nbUsers        : ". count($this->datas['users']));
+        $output->writeln("  filesPerUser   : ". $this->stats['filesPerUser']);
+        $output->writeln("  filesPerFolder : ". $this->stats['filesPerFolder']);
+        $output->writeln("  foldersPerUser : ". $this->stats['foldersPerUser']);
+        $output->writeln("  sharesPerUser  : ". $this->stats['sharesPerUser']);
+        $output->writeln("  sizePerUser    : ". \OC_Helper::humanFilesize($this->stats['sizePerUser']));
+        $output->writeln("  sizePerFile    : ". \OC_Helper::humanFilesize($this->stats['sizePerFile']));
+        $output->writeln("  sizePerFolder  : ". \OC_Helper::humanFilesize($this->stats['sizePerFolder']));
+        $output->writeln("  stdvNbFilesPerUser   : ". $this->stats['stdvNbFilesPerUser']);
+        $output->writeln("  stdvNbFoldersPerUser : ". $this->stats['stdvNbFoldersPerUser']);
+        $output->writeln("  stdvNbSharesPerUser  : ". $this->stats['stdvNbSharesPerUser']);
 
-function debug($var, $msg="", $lvl=0, $border=false) {
-    $tabul = str_repeat("    ", $lvl) ; ;
-
-    if ($border) {
-        echo '<div style="background-color:#d99;text-align:left;margin:5px;padding:5px;color:black;border:3px solid red;">' ;
-    }
-
-    if (is_array($var)) {
-        echo $tabul."$msg (array)\n" ;
-        foreach($var as $key => $val) {
-            debug($val, "[$key]", $lvl+1) ;
+        // stats by group ?
+        if (Helper::isDashboardGroupsEnabled() and !empty($this->stats['groups'])) {
+            // One stat line per group for today
+            foreach($this->stats['groups'] as $groupName => $groupInfo) {
+                $output->writeln("  GROUP : " . $groupName);
+                $output->writeln("    nbUsers   : " . $groupInfo['nbUsers']);
+                $output->writeln("    nbFiles   : " . $groupInfo['nbFiles']);
+                $output->writeln("    nbFolders : " . $groupInfo['nbFolders']);
+                $output->writeln("    filesize  : " . \OC_Helper::humanFilesize($groupInfo['filesize']));
+            }
         }
-    }
-    elseif(is_object($var)) {
-        $array = array() ;
-        $array = (array)$var ;
-        echo $tabul ."$msg (object ". get_class($var) .") \n" ;
-        debug($array, "", $lvl+1) ;
-    }
-    elseif(is_bool($var)) {
-        $boolean2string = ($var)?"TRUE":"FALSE" ;
-        echo $tabul .$msg ." (boolean):". $boolean2string .":\n" ;
-    }
-    else {
-        echo $tabul ."$msg (". gettype($var) ."):$var:\n" ;
-    }
-
-    if ($border) {
-        echo "</div>" ;
     }
 }
