@@ -38,12 +38,12 @@ Real time stats extracting :
 `[owncloud]/index.php/apps/dashboard/api/1.0/stats.[format]`
 
 History stats :
-`[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/[group_id]/[format]/[dataType]/[nbDays]/[wantHumanreadable]`
+`[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/[format]/[group_id]/[dataType]/[nbDays]/[wantHumanreadable]`
 
 where
 * `[owncloud]` is the web url to your owncloud instance
-* `[group_id]` is the group id (gid) you want to filter on. If you want global infos (all groups), set it to 'none'.
 * `[format]` is the format in which you want your stats ('json' or 'xml')
+* `[group_id]` is the group id (gid) you want to filter on. If you want global infos (all groups), set it to 'none'.
 * `[dataType]` is one of totalUsedSpace, nbUsers,nbFolders, nbFiles,nbShares, sizePerUser, foldersPerUser, filesPerUser, sharesPerUser, sizePerFolder, filesPerFolder, sizePerFile, stdvFilesPerUser, stdvFoldersPerUser, stdvSharesPerUser.
 * `[nbDays]` is the number of days from todays you want datas.
 * `[wantHumanreadable]` allows you to choose if you want human readable values (set to 1) or not (set to 0)
@@ -54,7 +54,7 @@ Human readable values are only possible for total used space, file size per user
 For example, 2147483647 bytes will be displayed as  2 GB.
 If you set `wantHumanReadable` to 1, a `unit` property will be added to the result, containing the adequate units.
 
-Warning, as for ownCloud 7.0.3RC2, you **must** set all these parameters ([group_id], [format], [dataType], [nbDays], [wantHumanreadable]) in urls.
+Warning, as for ownCloud 7.0.3RC2, you **must** set all these parameters ([format], [group_id], [dataType], [nbDays], [wantHumanreadable]) in urls.
 Like this : `[owncloud]/index.php/apps/dashboard/api/1.0/history_stats/json/none/nbUsers/30/0`
 
 Please note that this json api has public access. A restriction mechanism may be added later but is not present for now. In the meantime, .htaccess may be used to restrict access by IP, for instance.

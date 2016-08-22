@@ -16,18 +16,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use OCA\Dashboard\Service\StatsTaskService;
+use OCA\Dashboard\Service\LoggerService;
 
 class Stats extends Command {
 
     protected $statsTaskService;
+    protected $loggerService;
 
-    public function __construct(StatsTaskService $statsTaskService)
+    public function __construct(StatsTaskService $statsTaskService, LoggerService $loggerService)
     {
         $this->statsTaskService = $statsTaskService;
+        $this->loggerService = $loggerService;
         parent::__construct();
     }
 
-    protected function configure($kikoo)
+    protected function configure()
     {
         $prefix = \OCP\Config::getSystemValue('dbtableprefix', 'oc_');
 
@@ -40,11 +43,13 @@ class Stats extends Command {
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Beginning');
+        $this->loggerService->setOutput($output);
+
+        $output->writeln('Beginning - ' . date('d/m/Y'));
 
         $this->statsTaskService->run();
 
-        $output->writeln('Done');
+        $output->writeln('Done - ' . date('d/m/Y'));
     }
 
 
