@@ -21,17 +21,21 @@ class StatsTaskService {
     protected $statService;
     protected $historyMapper;
     protected $historyByGroupMapper;
+    protected $loggerService;
 
-    public function __construct(\OCA\Dashboard\Service\StatService $statService,HistoryMapper $historyMapper,HistoryByGroupMapper $historyByGroupMapper) {
+    public function __construct(\OCA\Dashboard\Service\StatService $statService,HistoryMapper $historyMapper,HistoryByGroupMapper $historyByGroupMapper, LoggerService $loggerService) {
         $this->statService = $statService;
         $this->historyMapper = $historyMapper;
         $this->historyByGroupMapper = $historyByGroupMapper;
+        $this->loggerService = $loggerService;
     }
 
     /**
      * Run cron job and store some basic stats in DB
      */
     public function run() {
+        $output = $this->loggerService->getOutput();
+
         $now = new \DateTime();
         $now->setTime(0, 0, 0);
         $datas = $this->historyMapper->countFrom($now);

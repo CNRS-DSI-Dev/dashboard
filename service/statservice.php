@@ -33,10 +33,12 @@ class StatService
     protected $userManager;
     protected $rootStorage;
     protected $datas;
+    protected $loggerService;
 
-    public function __construct($userManager, $rootStorage) {
+    public function __construct($userManager, $rootStorage, LoggerService $loggerService) {
         $this->userManager = $userManager;
         $this->rootStorage = $rootStorage;
+        $this->loggerService = $loggerService;
 
         $this->datas = array();
     }
@@ -100,7 +102,12 @@ class StatService
         // 'users' is a temporary container, won't be send back
         // $stats['users'] = array();
 
+        $output = $this->loggerService->getOutput();
+
         foreach ($users as $uid) {
+            $time_start = microtime(true);
+            $date_start = date('H:i:s');
+
             //$userDirectory = $this->rootStorage . '/' . $uid . '/files';
             $userDirectory = '/' . $uid . '/files';
 
@@ -177,6 +184,12 @@ class StatService
                     $stats['groups'][$group]['filesize'] += $user['filesize'];
                 }
             }
+
+            $time_end = microtime(true);
+            $time = $time_end - $time_start;
+            $date_end = date('H:i:s');
+
+            $output->writeln($uid . ' : debut ' . $date_start . ', fin : ' . $date_end . ' (' . $time . ')');
         }
 
         // some basic stats

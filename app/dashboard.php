@@ -18,8 +18,10 @@ use \OCA\Dashboard\Service\StatService;
 use \OCA\Dashboard\Service\HistoryService;
 use \OCA\Dashboard\Service\StatsTaskService;
 use \OCA\Dashboard\Service\GroupsService;
+use \OCA\Dashboard\Service\LoggerService;
 use \OCA\Dashboard\Db\HistoryMapper;
 use \OCA\Dashboard\Db\HistoryByGroupMapper;
+use Symfony\Component\Console\Output\NullOutput;
 
 class Dashboard extends App {
 
@@ -70,7 +72,8 @@ class Dashboard extends App {
         $container->registerService('StatService', function($c){
             return new StatService(
                 $c->query('UserManager'),
-                $c->query('RootStorage')
+                $c->query('RootStorage'),
+                $c->query('LoggerService')
             );
         });
 
@@ -85,7 +88,8 @@ class Dashboard extends App {
             return new StatsTaskService(
                 $c->query('StatService'),
                 $c->query('HistoryMapper'),
-                $c->query('HistoryByGroupMapper')
+                $c->query('HistoryByGroupMapper'),
+                $c->query('LoggerService')
             );
         });
 
@@ -103,6 +107,10 @@ class Dashboard extends App {
 
         $container->registerService('GroupManager', function($c) {
             return $c->query('ServerContainer')->getGroupManager();
+        });
+
+        $container->registerService('LoggerService', function($c) {
+            return new LoggerService(new NullOutput());
         });
 
         /**
