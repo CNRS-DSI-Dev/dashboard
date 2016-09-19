@@ -15,7 +15,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class LoggerService
 {
     protected $output;
-    public $a = 1;
 
     public function __construct(OutputInterface $output)
     {

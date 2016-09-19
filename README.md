@@ -1,6 +1,6 @@
 # Dashboard
 
-Owncloud 7 app that summarizes some global informations on local owncloud instance usage.
+Owncloud 9 app that summarizes some global informations on local owncloud instance usage.
 
 ![](https://cloud.githubusercontent.com/assets/8192056/4933656/7da19c5a-6599-11e4-94ec-f5667d4e1f22.png)
 
@@ -113,4 +113,5 @@ If you want to be informed about this ownCloud project at CNRS, please contact d
 
 * Icons are from [GLYPHICONS.com](http://glyphicons.com/) released under [Creative Commons Attribution 3.0 Unported (CC BY 3.0)](http://creativecommons.org/licenses/by/3.0/).
 * This app use an angular directive provided on github by [earlonrails](http://earlonrails.github.io/angular-chartjs-directive/).
-* [Chart.js](http://www.chartjs.org/) is open source and available under the [MIT license](http://opensource.org/licenses/MIT).
+* [Chart.js](http://www.chartjs.org/), used in version for OC 7 of this app, is open source and available under the [MIT license](http://opensource.org/licenses/MIT).
+* [C3 Angular Directive] (https://github.com/jettro/c3-angular-directive) and [c3js] (https://github.com/c3js/c3), used in version for OC 9 of this app, are also open source and available under [the MIT license] (http://opensource.org/licenses/MIT). [d3js] (https://github.com/d3/d3/) use is [granted by d3js author] (https://github.com/d3/d3/blob/master/LICENSE).

@@ -126,7 +126,8 @@ class HistoryService {
                 if ($name == "date") {
                     list($date, $time) = explode(' ', $data->getDate());
                     list($year, $month, $day) = explode('-', $date);
-                    array_push($arrayDatas['date'], (int)$day);
+                    array_push($arrayDatas['date'], $date);
+                    // array_push($arrayDatas['date'], (int)$day);
                 }
                 elseif ($name == "completeDate") {
                     array_push($arrayDatas['completeDate'], $data->getDate());

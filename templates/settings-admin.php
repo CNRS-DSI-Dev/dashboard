@@ -10,7 +10,7 @@
 
 \OCP\Util::addStyle('dashboard', 'settings-admin');
 
-\OCP\Util::addScript('dashboard', 'lib/angular');
+\OCP\Util::addScript('dashboard', 'lib/angular.min');
 \OCP\Util::addScript('dashboard', 'lib/angucomplete-alt');
 \OCP\Util::addScript('dashboard', 'app/settings-admin');
 \OCP\Util::addScript('dashboard', 'app/services/dashboard.services');

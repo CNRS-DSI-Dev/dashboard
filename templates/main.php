@@ -9,9 +9,12 @@
  */
 
 \OCP\Util::addStyle('dashboard', 'dashboard');
+\OCP\Util::addStyle('dashboard', 'c3.min');
 
-\OCP\Util::addScript('dashboard', 'lib/angular.min');
-\OCP\Util::addScript('dashboard', 'lib/Chart.min');
+\OCP\Util::addScript('dashboard', 'lib/angular');
+\OCP\Util::addScript('dashboard', 'lib/d3.min');
+\OCP\Util::addScript('dashboard', 'lib/c3.min');
+\OCP\Util::addScript('dashboard', 'lib/c3-angular');
 \OCP\Util::addScript('dashboard', 'app/directives/chartjs-directive');
 \OCP\Util::addScript('dashboard', 'app/services/dashboard.services');
 \OCP\Util::addScript('dashboard', 'app/dashboard');
@@ -61,12 +64,24 @@
 </div>
 
 <div class="history">
-    <div>
+     <div>
         <select ng-model="dataType" ng-options="type for type in dataTypes" ng-change="chartUpdate(false)"></select>
         <select ng-model="nbDays" ng-options="choices as choices.label for choices in nbDaysChoices" ng-change="chartUpdate(false)"></select>
         <select ng-model="groupId" ng-options="groups as groups.id for groups in groupList" ng-change="chartUpdate(true)"></select>
     </div>
-    <chart value="dataHistory" type="{{chartType}}" width="800" height="300" ng-init="chartType=''"></chart>
+    <c3chart bindto-id="chart1" chart-data="datapoints" chart-columns="datacolumns" chart-x="datax" callback-function="handleCallback">
+        <chart-colors color-pattern="#888"/>
+        <chart-legend show-legend="false"/>
+        <chart-size chart-width="800"/>
+        <chart-axis>
+            <chart-axis-x axis-id="x" axis-type="timeseries" axis-x-format="%Y-%m-%d">
+                <chart-axis-x-tick tick-culling="true" tick-culling-max="15" tick-format-time="%d/%m"/>
+            </chart-axis-x>
+            <chart-axis-y>
+                <chart-axis-y-tick tick-format=".2f" />
+            </chart-axis-y>
+        </chart-axis>
+    </c3chart>
 </div>
 
 </div>

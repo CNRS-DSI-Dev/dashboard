@@ -10,12 +10,12 @@
 
 namespace OCA\Dashboard\Controller;
 
-use \OCP\AppFramework\APIController;
+use \OCP\AppFramework\ApiController;
 use \OCP\AppFramework\Http\JSONResponse;
 use \OCP\IRequest;
 use \OCP\IConfig;
 
-class APIStatsController extends APIController {
+class APIStatsController extends ApiController {
 
     protected $settings;
     protected $userId;
@@ -38,7 +38,6 @@ class APIStatsController extends APIController {
      * Returns informations from history
      * @NoAdminRequired
      * @NoCSRFRequired
-     * @CORS
      */
     public function index() {
         $stats = array(
@@ -73,7 +72,6 @@ class APIStatsController extends APIController {
      * @NoAdminRequired
      * @NoCSRFRequired
      * @PublicPage
-     * @CORS
      */
     public function stats() {
         $stats = array(
@@ -91,7 +89,6 @@ class APIStatsController extends APIController {
     /**
      * @NoAdminRequired
      * @NoCSRFRequired
-     * @CORS
      */
     public function spaceUse() {
         $percent = 0;
@@ -111,7 +108,6 @@ class APIStatsController extends APIController {
      * @NoAdminRequired
      * @NoCSRFRequired
      * @PublicPage
-     * @CORS
      */
     public function historyStats($gid='none', $dataType='all', $range=30, $wanthumanreadable=1) {
         $history = array();

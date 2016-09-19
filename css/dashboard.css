@@ -74,6 +74,9 @@
 .history {
     clear: left;
 }
+.history .c3 line, .history .c3 path {
+    stroke: #888;
+}
 
 #footer {
     clear: both;

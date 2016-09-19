@@ -6,7 +6,7 @@
  * @license This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
 
-var dashboard = angular.module('dashboard', ['dashboard.services.stats', 'dashboard.services.chart', 'dashboard.services.groups', 'dashboard.filters', 'chartjs-directive']);
+var dashboard = angular.module('dashboard', ['dashboard.services.stats', 'dashboard.services.chart', 'dashboard.services.groups', 'dashboard.filters', 'chartjs-directive', 'gridshore.c3js.chart']);
 
 dashboard.config(['$httpProvider', function($httpProvider) {
     // CSRF protection
@@ -31,6 +31,10 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
     $scope.groupList = [];
     $scope.groupId = 'all';
 
+    $scope.datapoints=[];
+    $scope.datacolumns=[{"id":"nbUsers","type":"spline","name":"nbUsers"}];
+    $scope.datax={"id":"date"};
+
     /**
      * Initialisation
      */
@@ -48,7 +52,19 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
 
         statsService.getHistoryStats('none', 'nbUsers', 30)
             .success(function(data) {
-                $scope.dataHistory = chartService.confChart(data, 'nbUsers', '');
+                var item = 'nbUsers';
+                $scope.dataHistory = chartService.confChart(data, item, '');
+
+                _.each(
+                    data['date'],
+                    function(value, index) {
+                        var point = {};
+                        point['date'] = value;
+                        point[item] = data[item][index];
+
+                        $scope.datapoints.push(point);
+                    }
+                );
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -105,11 +121,32 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
                     unit = data.unit[$scope.dataType];
                 }
                 $scope.dataHistory = chartService.confChart(data, $scope.dataType, unit);
+
+                $scope.datacolumns=[{"id": $scope.dataType,"type": "spline","name": $scope.dataType}];
+                $scope.datapoints = [];
+                $scope.theChart.axis.labels({
+                    x: '',
+                    y: unit
+                });
+                _.each(
+                    data['date'],
+                    function(value, index) {
+                        var point = {};
+                        point['date'] = value;
+                        point[$scope.dataType] = data[$scope.dataType][index];
+
+                        $scope.datapoints.push(point);
+                    }
+                );
             })
             .error(function(data) {
                 console.log('Error: ' + data);
                 $scope.error = true;
             });
+    }
+
+    $scope.handleCallback = function(chartObject) {
+        $scope.theChart = chartObject;
     }
 
 }]);

@@ -32,4 +32,4 @@ $c = $app->getContainer();
 /**
  * cron task
  */
-\OCP\Backgroundjob::addRegularTask('\OCA\dashboard\Cron\statsTask', 'run');
+\OCP\BackgroundJob::addRegularTask('\OCA\dashboard\Cron\statsTask', 'run');

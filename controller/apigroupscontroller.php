@@ -10,14 +10,14 @@
 
 namespace OCA\Dashboard\Controller;
 
-use \OCP\AppFramework\APIController;
+use \OCP\AppFramework\ApiController;
 use \OCP\AppFramework\Http\JSONResponse;
 use \OCP\IRequest;
 use \OCP\IConfig;
 
 use \OCA\Dashboard\lib\Helper;
 
-class APIGroupsController extends APIController
+class ApiGroupsController extends ApiController
 {
 
     protected $settings;
@@ -56,7 +56,6 @@ class APIGroupsController extends APIController
 
     /**
      * Return list of groups
-     * @CORS
      * @return array List of groups
      */
     public function groups($search='')
