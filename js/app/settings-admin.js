@@ -40,7 +40,7 @@ dashboardApp.controller('groupsController', ['$scope', '$filter', 'groupsService
             });
 
         OC.AppConfig.getValue('dashboard', 'dashboard_group_list', null, function(data) {
-            if (data == null) {
+            if (data == null || data === '') {
                 $scope.groupList = [];
             }
             else {
