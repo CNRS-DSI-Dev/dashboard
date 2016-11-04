@@ -14,12 +14,14 @@ class GroupsService
 {
 
     protected $historyByGroupMapper;
+    protected $userSession;
 
-    public function __construct($userManager, $groupManager, \OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper)
+    public function __construct($userManager, $groupManager, \OCA\Dashboard\Db\HistoryByGroupMapper $historyByGroupMapper, \OCP\IUserSession $userSession)
     {
         $this->userManager = $userManager;
         $this->groupManager = $groupManager;
         $this->historyByGroupMapper = $historyByGroupMapper;
+        $this->userSession = $userSession;
     }
 
     /**
@@ -33,7 +35,7 @@ class GroupsService
         $uid = \OCP\User::getUser();
         $isAdmin = $group->inGroup($this->userManager->get($uid));
 
-        $groupsInfo = new \OC\Group\MetaData(\OCP\User::getUser(), $isAdmin, $this->groupManager);
+        $groupsInfo = new \OC\Group\MetaData(\OCP\User::getUser(), $isAdmin, $this->groupManager, $this->userSession);
         $groupsInfo->setSorting($groupsInfo::SORT_USERCOUNT);
         list($adminGroup, $groups) = $groupsInfo->get($search);
 

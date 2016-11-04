@@ -97,12 +97,17 @@ class Dashboard extends App {
             return new GroupsService(
                 $c->query('UserManager'),
                 $c->query('GroupManager'),
-                $c->query('HistoryByGroupMapper')
+                $c->query('HistoryByGroupMapper'),
+                $c->query('UserSession')
             );
         });
 
         $container->registerService('UserManager', function($c) {
             return $c->query('ServerContainer')->getUserManager();
+        });
+
+        $container->registerService('UserSession', function($c) {
+            return $c->query('ServerContainer')->getUserSession();
         });
 
         $container->registerService('GroupManager', function($c) {
