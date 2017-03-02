@@ -2,7 +2,7 @@
 
 Owncloud 9 app that summarizes some global informations on local owncloud instance usage.
 
-![](https://cloud.githubusercontent.com/assets/8192056/4933656/7da19c5a-6599-11e4-94ec-f5667d4e1f22.png)
+![](https://cloud.githubusercontent.com/assets/8192056/23512872/7074ce3e-ff62-11e6-940a-11e09e2c7dd0.png)
 
 These informations are gathered :
 * total used space,
