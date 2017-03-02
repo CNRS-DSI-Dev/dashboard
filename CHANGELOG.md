@@ -1,3 +1,7 @@
+dashboard (2.0)
+* **ENHANCEMENT** Adapt code to ownCloud 9+. Tested on OC 10beta.
+* **ENHANCEMENT** Change graphic angular component (from chartjs to c3js)
+
 dashboard (1.2)
 * **BUGFIX** Displayed unit is now correct. Refs issue #6.
 * **BUGFIX** Pass code checker tests. Refs issue #8.
