@@ -45,7 +45,10 @@ dashboard.controller('statsController', ['$scope', 'statsService', 'groupsServic
                 chartType = "Line";
                 jQuery(".dataBlock span").show();
             })
-            .error(function(data) {
+            .error(function(data, status) {
+                if (status === 422) {
+                    OC.Notification.showTemporary(t('dashboard', 'No stats to display for now', {}, undefined, {escape: false}));
+                }
                 console.log('Error: ' + data);
                 $scope.error = true;
             });

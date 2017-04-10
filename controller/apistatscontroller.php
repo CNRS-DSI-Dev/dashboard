@@ -12,6 +12,7 @@ namespace OCA\Dashboard\Controller;
 
 use \OCP\AppFramework\ApiController;
 use \OCP\AppFramework\Http\JSONResponse;
+use \OCP\AppFramework\Http\Response;
 use \OCP\IRequest;
 use \OCP\IConfig;
 
@@ -49,9 +50,9 @@ class APIStatsController extends ApiController {
 
         try {
             $history = $this->historyService->getHistoryStats('none', 'all', 'last', 0);
-        } catch (Exception $e) {
-            $response = new JSONResponse();
-            return $response->setStatus(\OCP\AppFramework\Http::STATUS_NOT_FOUND);
+        } catch (\Exception $e) {
+            $response = new Response();
+            return $response->setStatus(\OCP\AppFramework\Http::STATUS_UNPROCESSABLE_ENTITY);
         }
 
         $stats['history'] = $history;
