@@ -103,9 +103,7 @@ class StatService
         // $stats['users'] = array();
 
         $output = $this->loggerService->getOutput();
-$fdbg = fopen('/tmp/truc.log', 'a');
-fputs($fdbg, 'ouput :' . print_r($output, true) . ":\n");
-fclose($fdbg);
+
         foreach ($users as $uid) {
             $time_start = microtime(true);
             $date_start = date('H:i:s');
@@ -131,7 +129,7 @@ fclose($fdbg);
             // group stats ?
             $groupList = array();
             if ($statsByGroup) {
-                $userGroups = \OC_Group::getUserGroups($uid);
+                $userGroups = \OC::$server->getGroupManager()->getUserIdGroups($uid);
                 $groupList = array_intersect($userGroups, $statEnabledGroupList);
 
                 foreach($groupList as $group) {
